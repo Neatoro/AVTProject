@@ -6,17 +6,24 @@ Vue.use(Vuex);
 
 export const mutationTypes = {
   INCREMENT_TRACK_COUNT: "INCREMENT_TRACK_COUNT",
-  ADD_SAMPLE: "ADD_SAMPLE"
+  ADD_SAMPLE: "ADD_SAMPLE",
+  SET_BPM: "SET_BPM",
+  SET_IS_PLAYING: "SET_IS_PLAYING",
+  SET_CURRENT_COLUMN: "SET_CURRENT_COLUMN"
 };
 
 export const actionTypes = {
-  LOAD_SAMPLE: "LOAD_SAMPLE"
+  LOAD_SAMPLE: "LOAD_SAMPLE",
+  NEXT_COLUMN: "NEXT_COLUMN"
 };
 
 export default new Vuex.Store({
   state: {
     trackCount: 4,
-    samples: []
+    samples: [],
+    bpm: 80,
+    isPlaying: false,
+    currentColumn: 0
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {
@@ -24,6 +31,15 @@ export default new Vuex.Store({
     },
     [mutationTypes.ADD_SAMPLE](state, sample) {
       state.samples.push(sample);
+    },
+    [mutationTypes.SET_BPM](state, bpm) {
+      Vue.set(state, "bpm", bpm);
+    },
+    [mutationTypes.SET_IS_PLAYING](state, isPlaying) {
+      Vue.set(state, "isPlaying", isPlaying);
+    },
+    [mutationTypes.SET_CURRENT_COLUMN](state, currentColumn) {
+      Vue.set(state, "currentColumn", currentColumn);
     }
   },
   actions: {
@@ -51,6 +67,13 @@ export default new Vuex.Store({
 
         reader.readAsArrayBuffer(file);
       });
+    },
+    [actionTypes.NEXT_COLUMN]({ commit, state }) {
+      const nextColumn = (state.currentColumn + 1) % 16;
+
+      commit(mutationTypes.SET_CURRENT_COLUMN, nextColumn);
+
+      return Promise.resolve();
     }
   }
 });
