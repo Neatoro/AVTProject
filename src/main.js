@@ -3,6 +3,10 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 
+import * as THREE from 'three';
+
+console.log(THREE);
+
 Vue.config.productionTip = false;
 
 new Vue({
