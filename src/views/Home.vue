@@ -1,25 +1,36 @@
 <template>
-    <div class="home">
-        <Slider title="Volume" :min="0" :max="100"></Slider>
-        <Slider title="Lowpass" :min="0" :max="18000"></Slider>
-        <Slider title="Highpass" :min="0" :max="18000" :defaultValue="10"></Slider>
-        <Sequencer>
-            <Step></Step>
-        </Sequencer>
+  <div class="home">
+    <Visualization/>
+    <div class="data-controller">
+      <Controller/>
+      <EffectController/>
+      <button class="loader">Load Sample</button>
     </div>
+    <Sequencer/>
+  </div>
 </template>
 
 <script>
-    // @ is an alias to /src
+import Controller from "@/components/Controller.vue";
+import EffectController from "@/components/EffectController.vue";
+import Sequencer from "@/components/Sequencer.vue";
+import Visualization from "@/components/Visualization.vue";
 
-    import Slider from '@/components/Slider.vue';
-    import Sequencer from "@/components/Sequencer.vue";
-
-    export default {
-        name: "home",
-        components: {
-            Sequencer,
-            Slider
-        }
-    };
+export default {
+  name: "home",
+  components: {
+    Sequencer,
+    EffectController,
+    Controller,
+    Visualization
+  }
+};
 </script>
+
+<style lang="scss">
+.data-controller {
+  display: flex;
+  align-items: center;
+  height: 10vh;
+}
+</style>

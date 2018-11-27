@@ -1,23 +1,28 @@
 <template>
-    <div class="steps">
-        <Step class="row1" v-for="n in 16" :class=col(n)></Step>
-        <Step class="row2" v-for="n in 16" :class=col(n)></Step>
-        <Step class="row3" v-for="n in 16" :class=col(n)></Step>
-        <Step class="row4" v-for="n in 16" :class=col(n)></Step>
-    </div>
+  <div class="sequencer">
+    <Track v-for="n in trackCount" :key="n"/>
+    <button class="adder" @click="onAddTrack">+</button>
+  </div>
 </template>
 
 <script>
-import Step from "@/components/Step.vue";
+import { mapState } from "vuex";
+import { mutationTypes } from "@/store";
+import Track from "@/components/Track.vue";
 
 export default {
   name: "Sequencer",
   components: {
-    Step
+    Track
   },
+  computed: mapState({
+    trackCount: state => state.trackCount
+  }),
   methods: {
-    col(index) {
-      return "col" + index;
+    onAddTrack(evt) {
+      evt.preventDefault();
+
+      this.$store.commit(mutationTypes.INCREMENT_TRACK_COUNT);
     }
   }
 };
@@ -25,4 +30,10 @@ export default {
 
 
 <style lang="scss">
+.sequencer {
+  height: 65vh;
+  max-height: 65vh;
+  overflow-y: scroll;
+  padding: 8px;
+}
 </style>
