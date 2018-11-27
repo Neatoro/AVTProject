@@ -4,13 +4,21 @@
     <div class="data-controller">
       <Controller/>
       <EffectController/>
-      <button class="loader">Load Sample</button>
+      <input
+        ref="fileInput"
+        type="file"
+        accept="audio/*"
+        style="display: none;"
+        @change="onLoadSample"
+      >
+      <button class="loader" @click="onStartLoad">Load Sample</button>
     </div>
     <Sequencer/>
   </div>
 </template>
 
 <script>
+import { actionTypes } from "@/store";
 import Controller from "@/components/Controller.vue";
 import EffectController from "@/components/EffectController.vue";
 import Sequencer from "@/components/Sequencer.vue";
@@ -23,6 +31,23 @@ export default {
     EffectController,
     Controller,
     Visualization
+  },
+  methods: {
+    onStartLoad(evt) {
+      evt.preventDefault();
+      this.$refs.fileInput.click();
+    },
+
+    onLoadSample(evt) {
+      evt.preventDefault();
+
+      const file = this.$refs.fileInput.files[0];
+
+      this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
+        file,
+        audioContext: this.$audio
+      });
+    }
   }
 };
 </script>

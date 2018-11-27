@@ -1,10 +1,7 @@
 <template>
   <div class="track">
     <select class="sample-select">
-      <option>Kick</option>
-      <option>Snare</option>
-      <option>Head</option>
-      <option>Clap</option>
+      <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
     </select>
     <Slider title="Volume" :min="0" :max="100" :defaultValue="100"></Slider>
     <input type="checkbox" class="checkbox" :checked="active">
@@ -13,6 +10,8 @@
 </template>
 
 <script>
+import _ from "lodash";
+import { mapState } from "vuex";
 import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
 
@@ -24,6 +23,9 @@ export default {
   },
   data: () => ({
     active: true
+  }),
+  computed: mapState({
+    sampleNames: state => _.map(state.samples, sample => sample.name)
   }),
   methods: {
     col(index) {
