@@ -19,6 +19,16 @@ export default {
   },
   data() {
     return { value: this.defaultValue };
+  },
+  watch: {
+    value() {
+      this.onChange();
+    }
+  },
+  methods: {
+    onChange() {
+      this.$emit("change", this.value);
+    }
   }
 };
 </script>

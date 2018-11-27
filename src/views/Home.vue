@@ -45,7 +45,7 @@ export default {
 
       this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
         file,
-        audioContext: this.$audio
+        audioContext: this.$audio.audioContext
       });
     }
   }

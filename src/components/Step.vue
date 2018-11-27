@@ -36,4 +36,8 @@ export default {
     background-color: lighten(#fb0, 5);
   }
 }
+
+.step--called {
+  border: 3px solid #00f;
+}
 </style>

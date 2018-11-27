@@ -6,7 +6,10 @@ import store from "./store";
 Vue.config.productionTip = false;
 
 const audioContext = new AudioContext();
-Vue.prototype.$audio = audioContext;
+const gain = audioContext.createGain();
+gain.connect(audioContext.destination);
+
+Vue.prototype.$audio = { audioContext, gain };
 
 new Vue({
   router,
