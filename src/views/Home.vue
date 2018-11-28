@@ -7,6 +7,7 @@
       <input
         ref="fileInput"
         type="file"
+        multiple
         accept="audio/*"
         style="display: none;"
         @change="onLoadSample"
@@ -40,13 +41,16 @@ export default {
 
     onLoadSample(evt) {
       evt.preventDefault();
+        for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
+            let file = this.$refs.fileInput.files[i];
+            this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
+                    file,
+                audioContext: this.$audio.audioContext
+            });
+        }
 
-      const file = this.$refs.fileInput.files[0];
 
-      this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
-        file,
-        audioContext: this.$audio.audioContext
-      });
+
     }
   }
 };
