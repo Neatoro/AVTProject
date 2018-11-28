@@ -42,7 +42,7 @@ export default {
   }),
   mounted() {
     this.gain = this.$audio.audioContext.createGain();
-    this.gain.connect(this.$audio.gain);
+    this.gain.connect(this.$audio.connector);
   },
   watch: {
     currentColumn() {
