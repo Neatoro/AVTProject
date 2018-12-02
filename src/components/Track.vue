@@ -1,12 +1,14 @@
 <template>
-  <div class="track">
-    <select class="sample-select" v-model="selectedSample">
-      <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
-    </select>
-    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
-    <input type="checkbox" class="checkbox" v-model="active">
-    <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
-  </div>
+    <div class="track">
+        <select class="sample-select" v-model="selectedSample">
+            <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
+        </select>
+        <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
+        <Slider title="Lowpass" :min="0" :max="18000" :defaultValue="18000" @change="onLowpassValueChanged"></Slider>
+        <Slider title="Highpass" :min="0" :max="18000" :defaultValue="0" @change="onHighpassValueChanged"></Slider>
+        <input type="checkbox" class="checkbox" v-model="active">
+        <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
+    </div>
 </template>
 
 <script>
@@ -25,6 +27,8 @@ export default {
     active: true,
     selectedSample: null,
     source: null,
+    lowpass: null,
+    highpass: null,
     gain: null
   }),
   computed: mapState({
@@ -42,7 +46,14 @@ export default {
   }),
   mounted() {
     this.gain = this.$audio.audioContext.createGain();
-    this.gain.connect(this.$audio.connector);
+    this.lowpass = this.$audio.audioContext.createBiquadFilter();
+    this.lowpass.type = "lowpass";
+    this.highpass = this.$audio.audioContext.createBiquadFilter();
+    this.highpass.type = "highpass";
+    this.lowpass
+      .connect(this.highpass)
+      .connect(this.gain)
+      .connect(this.$audio.connector);
   },
   watch: {
     currentColumn() {
@@ -53,16 +64,26 @@ export default {
     onVolumeChange(volume) {
       this.gain.gain.value = volume / 100;
     },
+    onLowpassValueChanged(lowpass) {
+      this.lowpass.frequency.setValueAtTime(
+        lowpass,
+        this.$audio.audioContext.currentTime
+      );
+    },
+    onHighpassValueChanged(highpass) {
+      this.highpass.frequency.setValueAtTime(
+        highpass,
+        this.$audio.audioContext.currentTime
+      );
+    },
     play() {
       const shouldPlay = this.$refs.steps[this.currentColumn].isActive;
-
       if (shouldPlay && !_.isNil(this.sample) && this.active) {
         this.source = this.$audio.audioContext.createBufferSource();
-        this.source.connect(this.gain);
-
+        this.source.connect(this.lowpass);
         this.source.buffer = this.sample.data();
         this.source.loop = false;
-        this.source.start(0, 0, 60000 / this.bpm);
+        this.source.start(0, 0, 60000 / this.bpm / 4);
       }
     }
   }
@@ -85,5 +106,3 @@ export default {
   outline: none;
 }
 </style>
-
-
