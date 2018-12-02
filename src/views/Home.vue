@@ -24,6 +24,7 @@ import Controller from "@/components/Controller.vue";
 import EffectController from "@/components/EffectController.vue";
 import Sequencer from "@/components/Sequencer.vue";
 import Visualization from "@/components/Visualization.vue";
+import * as _ from "lodash";
 
 export default {
   name: "home",
@@ -41,16 +42,22 @@ export default {
 
     onLoadSample(evt) {
       evt.preventDefault();
-        for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
-            let file = this.$refs.fileInput.files[i];
-            this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
-                    file,
-                audioContext: this.$audio.audioContext
-            });
-        }
-
-
-
+      _.forEach(
+        this.$refs.fileInput.files,
+        _.bind(function(file) {
+          this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
+            file,
+            audioContext: this.$audio.audioContext
+          });
+        }, this)
+      );
+      // for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
+      //   let file = this.$refs.fileInput.files[i];
+      //   this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
+      //     file,
+      //     audioContext: this.$audio.audioContext
+      //   });
+      // }
     }
   }
 };
