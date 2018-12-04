@@ -7,6 +7,9 @@ import * as THREE from "three";
 
 export default {
   name: "Visualization",
+  data: () => ({
+    wireframe: null
+  }),
 
   methods: {
     init() {
@@ -16,47 +19,25 @@ export default {
         antialias: true
       });
       this.handleResize();
-      let material = new THREE.PointsMaterial({
-        size: 5,
-        vertexColors: THREE.VertexColors
+      let geometry = new THREE.BoxGeometry(50, 50, 50);
+      let mat = new THREE.MeshBasicMaterial({
+        color: 0xfefefe,
+        opacity: 0.5
       });
-
-      let x, y, z;
-      for (let i = 0; i < 1000; i++) {
-        x = Math.random() * 800 - 400;
-        y = Math.random() * 800 - 400;
-        z = Math.random() * 800 - 400;
-
-        this.$three.geometry.vertices.push(new THREE.Vector3(x, y, z));
-        this.$three.geometry.colors.push(
-          new THREE.Color(Math.random(), Math.random(), Math.random())
-        );
-        this.$three.geometry.colors[i] = new THREE.Color(
-          Math.random(),
-          Math.random(),
-          Math.random()
-        );
-      }
-      let pointCloud = new THREE.Points(this.$three.geometry, material);
-      this.$three.scene.add(pointCloud);
+      this.wireframe = new THREE.Mesh(geometry, mat);
+      this.$three.scene.add(this.wireframe);
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
+      this.wireframe.position.z = -100;
       this.render.bind(this)();
     },
     render() {
       window.requestAnimationFrame(this.render);
       this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
-      this.$three.geometry.vertices.forEach(
-        function(particle, index) {
-          this.$three.geometry.colors[index] = new THREE.Color(
-            this.$audio.dataArray[0] / 255,
-            this.$audio.dataArray[20] / 255,
-            this.$audio.dataArray[80] / 255
-          );
-        }.bind(this)
-      );
-      this.$three.geometry.verticesNeedUpdate = true;
-      this.$three.geometry.colorsNeedUpdate = true;
-
+      /*this.wireframe.color = new THREE.Color(
+        this.$audio.dataArray[0] / 255,
+        this.$audio.dataArray[20] / 255,
+        this.$audio.dataArray[80] / 255
+      );*/
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
     },
     handleResize() {
@@ -69,8 +50,6 @@ export default {
       this.$three.camera.aspect =
         this.$refs.threeCanvas.width / this.$refs.threeCanvas.height;
       this.$three.camera.updateProjectionMatrix();
-      console.log("canvas: " + this.$refs.threeCanvas.width);
-      console.log("window: " + window.outerWidth);
     }
   },
   mounted() {
