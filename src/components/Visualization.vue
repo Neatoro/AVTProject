@@ -10,15 +10,12 @@ export default {
 
   methods: {
     init() {
-      let canvas = this.$refs.threeCanvas;
+      window.addEventListener("resize", this.handleResize.bind(this));
       this.$three.renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
+        canvas: this.$refs.threeCanvas,
         antialias: true
       });
-      console.log(canvas.width);
-      this.$three.renderer.setSize(canvas.width, canvas.height, false);
-      this.$three.camera.aspect = canvas.width / canvas.height;
-      this.$three.camera.updateProjectionMatrix();
+      this.handleResize();
       let material = new THREE.PointsMaterial({
         size: 5,
         vertexColors: THREE.VertexColors
@@ -61,6 +58,19 @@ export default {
       this.$three.geometry.colorsNeedUpdate = true;
 
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
+    },
+    handleResize() {
+      this.$refs.threeCanvas.width = window.outerWidth;
+      this.$three.renderer.setSize(
+        this.$refs.threeCanvas.width,
+        this.$refs.threeCanvas.height,
+        false
+      );
+      this.$three.camera.aspect =
+        this.$refs.threeCanvas.width / this.$refs.threeCanvas.height;
+      this.$three.camera.updateProjectionMatrix();
+      console.log("canvas: " + this.$refs.threeCanvas.width);
+      console.log("window: " + window.outerWidth);
     }
   },
   mounted() {
