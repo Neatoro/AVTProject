@@ -6,26 +6,32 @@
 </template>
 
 <script>
-    import Slider from "@/components/Slider.vue";
+import Slider from "@/components/Slider.vue";
 
-    export default {
-        name: "EffectController",
-        components: {
-            Slider
-        },
-        methods: {
-            onLowpassValueChanged(lowpass) {
-                this.$audio.lowpass.frequency.setValueAtTime(lowpass, this.$audio.audioContext.currentTime);
-            },
-            onHighpassValueChanged(highpass) {
-                this.$audio.highpass.frequency.setValueAtTime(highpass, this.$audio.audioContext.currentTime);
-            }
-        }
-    };
+export default {
+  name: "EffectController",
+  components: {
+    Slider
+  },
+  methods: {
+    onLowpassValueChanged(lowpass) {
+      this.$audio.lowpass.frequency.setValueAtTime(
+        lowpass,
+        this.$audio.audioContext.currentTime
+      );
+    },
+    onHighpassValueChanged(highpass) {
+      this.$audio.highpass.frequency.setValueAtTime(
+        highpass,
+        this.$audio.audioContext.currentTime
+      );
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    .effect-controller {
-        display: flex;
-    }
+.effect-controller {
+  display: flex;
+}
 </style>
