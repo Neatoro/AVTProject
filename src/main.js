@@ -19,9 +19,8 @@ connector.connect(highpass);
 
 highpass
   .connect(lowpass)
-  .connect(reverb)
+  // .connect(reverb)
   .connect(gain);
-
 gain.connect(audioContext.destination);
 
 Vue.prototype.$audio = {

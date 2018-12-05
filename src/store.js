@@ -23,7 +23,7 @@ export default new Vuex.Store({
     samples: [],
     bpm: 80,
     isPlaying: false,
-    currentColumn: 0
+    currentColumn: -1
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {

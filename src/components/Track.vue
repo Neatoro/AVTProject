@@ -6,6 +6,7 @@
         <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
         <Slider title="Lowpass" :min="0" :max="18000" :defaultValue="18000" @change="onLowpassValueChanged"></Slider>
         <Slider title="Highpass" :min="0" :max="18000" :defaultValue="0" @change="onHighpassValueChanged"></Slider>
+        <Slider title="Delay" :min="0" :max="5" :defaultValue="0" :step="0.1" @change="onDelayTimeValueChange"></Slider>
         <input type="checkbox" class="checkbox" v-model="active">
         <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
     </div>
@@ -29,7 +30,8 @@ export default {
     source: null,
     lowpass: null,
     highpass: null,
-    gain: null
+    gain: null,
+    delay: null
   }),
   computed: mapState({
     sampleNames: state => _.map(state.samples, sample => sample.name),
@@ -50,10 +52,12 @@ export default {
     this.lowpass.type = "lowpass";
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
+    this.delay = this.$audio.audioContext.createDelay(5);
     this.lowpass
       .connect(this.highpass)
       .connect(this.gain)
       .connect(this.$audio.connector);
+    //this.gain.connect(this.delay).connect(this.$audio.audioContext.destination);
   },
   watch: {
     currentColumn() {
@@ -61,6 +65,16 @@ export default {
     }
   },
   methods: {
+    onDelayTimeValueChange(delay) {
+      // this.delay.delayTime.setValueAtTime(
+      //     delay,
+      //     this.$audio.audioContext.currentTime
+      // );
+      this.delay.delayTime.value = delay;
+      console.log(this.delay.delayTime);
+      // console.log(this.$audio.audioContext.currentTime);
+      // this.delay.delayTime.value = delay;
+    },
     onVolumeChange(volume) {
       this.gain.gain.value = volume / 100;
     },
@@ -84,6 +98,7 @@ export default {
         this.source.buffer = this.sample.data();
         this.source.loop = false;
         this.source.start(0, 0, 60000 / this.bpm / 4);
+        // this.source.start(0);
       }
     }
   }

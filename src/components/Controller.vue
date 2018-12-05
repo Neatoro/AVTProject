@@ -16,7 +16,7 @@
     }
 
     function start() {
-        const timing = 60000 / (this.bpm * 4);
+        const timing = 60000 / (this.bpm *4 );
         console.log(timing);
         this.interval = setInterval(tick.bind(this), timing);
     }
