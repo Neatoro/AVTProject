@@ -5,13 +5,25 @@
 <script>
 export default {
   name: "Step",
+  props: {
+    value: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
-    return { isActive: false };
+    return { isActive: this.value };
+  },
+  watch: {
+    value() {
+      this.isActive = this.value;
+    }
   },
   methods: {
     onClick(evt) {
       evt.preventDefault();
       this.isActive = !this.isActive;
+      this.$emit("input", this.isActive);
     }
   }
 };

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import presets from "./presets";
 import Vue from "vue";
 import Vuex from "vuex";
 
@@ -9,7 +10,8 @@ export const mutationTypes = {
   ADD_SAMPLE: "ADD_SAMPLE",
   SET_BPM: "SET_BPM",
   SET_IS_PLAYING: "SET_IS_PLAYING",
-  SET_CURRENT_COLUMN: "SET_CURRENT_COLUMN"
+  SET_CURRENT_COLUMN: "SET_CURRENT_COLUMN",
+  SET_SELECTED_PRESET: "SET_SELECTED_PRESET"
 };
 
 export const actionTypes = {
@@ -23,7 +25,9 @@ export default new Vuex.Store({
     samples: [],
     bpm: 80,
     isPlaying: false,
-    currentColumn: 0
+    currentColumn: 0,
+    selectedPreset: "None",
+    presets
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {
@@ -40,6 +44,9 @@ export default new Vuex.Store({
     },
     [mutationTypes.SET_CURRENT_COLUMN](state, currentColumn) {
       Vue.set(state, "currentColumn", currentColumn);
+    },
+    [mutationTypes.SET_SELECTED_PRESET](state, presetName) {
+      Vue.set(state, "selectedPreset", presetName);
     }
   },
   actions: {

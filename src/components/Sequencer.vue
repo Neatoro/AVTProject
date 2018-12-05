@@ -1,6 +1,6 @@
 <template>
   <div class="sequencer">
-    <Track v-for="n in trackCount" :key="n"/>
+    <Track v-for="n in trackCount" :key="n" :id="n"/>
     <button class="adder" @click="onAddTrack">+</button>
   </div>
 </template>
