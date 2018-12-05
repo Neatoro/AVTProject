@@ -31,7 +31,7 @@ export default new Vuex.Store({
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {
-      Vue.set(state, "trackCount", state.trackCount + 1);
+      Vue.set(state, "trackCount", Math.min(state.trackCount + 1, 8));
     },
     [mutationTypes.ADD_SAMPLE](state, sample) {
       state.samples.push(sample);

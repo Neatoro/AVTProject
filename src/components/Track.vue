@@ -68,6 +68,7 @@ export default {
     },
     currentColumn: state => state.currentColumn,
     bpm: state => state.bpm,
+    presetName: state => state.selectedPreset,
     currentPresetForTrack(state) {
       const selectedPreset = _.find(
         state.presets,
@@ -96,7 +97,7 @@ export default {
     currentColumn() {
       this.play();
     },
-    currentPresetForTrack() {
+    presetName() {
       const presetStepData = _.clone(
         _.get(this.currentPresetForTrack, "steps")
       );
