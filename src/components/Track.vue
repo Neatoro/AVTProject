@@ -1,14 +1,26 @@
 <template>
-    <div class="track">
-        <select class="sample-select" v-model="selectedSample">
-            <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
-        </select>
-        <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
-        <Slider title="Lowpass" :min="0" :max="18000" :defaultValue="18000" @change="onLowpassValueChanged"></Slider>
-        <Slider title="Highpass" :min="0" :max="18000" :defaultValue="0" @change="onHighpassValueChanged"></Slider>
-        <input type="checkbox" class="checkbox" v-model="active">
-        <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
-    </div>
+  <div class="track">
+    <select class="sample-select" v-model="selectedSample">
+      <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
+    </select>
+    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
+    <Slider
+      title="Lowpass"
+      :min="0"
+      :max="18000"
+      :defaultValue="18000"
+      @change="onLowpassValueChanged"
+    ></Slider>
+    <Slider
+      title="Highpass"
+      :min="0"
+      :max="18000"
+      :defaultValue="0"
+      @change="onHighpassValueChanged"
+    ></Slider>
+    <input type="checkbox" class="checkbox" v-model="active">
+    <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
+  </div>
 </template>
 
 <script>

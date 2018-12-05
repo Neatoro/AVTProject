@@ -19,10 +19,10 @@ highpass.connect(lowpass);
 lowpass.connect(gain);
 gain.connect(audioContext.destination);
 
-Vue.prototype.$audio = {audioContext, connector, gain, lowpass, highpass};
+Vue.prototype.$audio = { audioContext, connector, gain, lowpass, highpass };
 
 new Vue({
-    router,
-    store,
-    render: h => h(App)
+  router,
+  store,
+  render: h => h(App)
 }).$mount("#app");
