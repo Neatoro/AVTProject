@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
+    "node": "^11.2.0",
     "three": "^0.98.0",
+    "update": "^0.7.4",
     "vue": "2.5.17",
     "vue-router": "3.0.1",
     "vuex": "3.0.1"
