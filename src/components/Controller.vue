@@ -13,6 +13,7 @@
 import _ from "lodash";
 import { mapState } from "vuex";
 import { actionTypes, mutationTypes } from "@/store";
+import Interval from "@/utils/editableInterval";
 import Slider from "@/components/Slider.vue";
 
 function tick() {
@@ -20,14 +21,17 @@ function tick() {
 }
 
 function start() {
-  const timing = 60000 / (this.bpm * 4);
-  console.log(timing);
-  this.interval = setInterval(tick.bind(this), timing);
+  const timing = calcualteTiming(this.bpm);
+  this.interval = new Interval(timing, tick.bind(this));
+  this.interval.start();
 }
 
 function stop() {
-  clearInterval(this.interval);
-  this.interval = undefined;
+  this.interval.stop();
+}
+
+function calcualteTiming(bpm) {
+  return 60000 / (16 * bpm);
 }
 
 export default {
@@ -57,6 +61,11 @@ export default {
         mutationTypes.SET_SELECTED_PRESET,
         this.currentSelectedPreset
       );
+    },
+    bpm() {
+      if (!_.isUndefined(this.interval)) {
+        this.interval.interval = calcualteTiming(this.bpm);
+      }
     }
   },
   methods: {
