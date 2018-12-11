@@ -19,7 +19,13 @@
       @change="onHighpassValueChanged"
     ></Slider>
     <input type="checkbox" class="checkbox" v-model="active">
-    <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"></Step>
+    <Step
+      ref="steps"
+      v-for="n in 16"
+      :key="n"
+      :class="{'step--called': n - 1 === currentColumn}"
+      v-model="stepData[n - 1]"
+    ></Step>
   </div>
 </template>
 
@@ -35,13 +41,20 @@ export default {
     Slider,
     Step
   },
+  props: {
+    id: {
+      type: Number,
+      required: true
+    }
+  },
   data: () => ({
     active: true,
     selectedSample: null,
     source: null,
     lowpass: null,
     highpass: null,
-    gain: null
+    gain: null,
+    stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
     sampleNames: state => _.map(state.samples, sample => sample.name),
@@ -54,7 +67,19 @@ export default {
       );
     },
     currentColumn: state => state.currentColumn,
-    bpm: state => state.bpm
+    bpm: state => state.bpm,
+    presetName: state => state.selectedPreset,
+    currentPresetForTrack(state) {
+      const selectedPreset = _.find(
+        state.presets,
+        preset => preset.name === state.selectedPreset
+      );
+
+      return _.find(
+        _.get(selectedPreset, "tracks", []),
+        _.bind(track => track.id === this.id, this)
+      );
+    }
   }),
   mounted() {
     this.gain = this.$audio.audioContext.createGain();
@@ -66,10 +91,19 @@ export default {
       .connect(this.highpass)
       .connect(this.gain)
       .connect(this.$audio.connector);
+    console.log(undefined);
   },
   watch: {
     currentColumn() {
       this.play();
+    },
+    presetName() {
+      const presetStepData = _.clone(
+        _.get(this.currentPresetForTrack, "steps")
+      );
+      this.stepData = _.isUndefined(presetStepData)
+        ? _.map(_.range(0, 16), () => false)
+        : presetStepData;
     }
   },
   methods: {
@@ -89,7 +123,7 @@ export default {
       );
     },
     play() {
-      const shouldPlay = this.$refs.steps[this.currentColumn].isActive;
+      const shouldPlay = this.stepData[this.currentColumn];
       if (shouldPlay && !_.isNil(this.sample) && this.active) {
         this.source = this.$audio.audioContext.createBufferSource();
         this.source.connect(this.lowpass);

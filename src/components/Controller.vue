@@ -1,5 +1,8 @@
 <template>
   <div class="controller">
+    <select v-model="currentSelectedPreset">
+      <option v-for="presetName in presetNames" :key="presetName">{{ presetName }}</option>
+    </select>
     <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
     <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
     <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
@@ -7,6 +10,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 import { mapState } from "vuex";
 import { actionTypes, mutationTypes } from "@/store";
 import Slider from "@/components/Slider.vue";
@@ -32,11 +36,13 @@ export default {
     Slider
   },
   data: () => ({
-    interval: undefined
+    interval: undefined,
+    currentSelectedPreset: "None"
   }),
   computed: mapState({
     isPlaying: state => state.isPlaying,
-    bpm: state => state.bpm
+    bpm: state => state.bpm,
+    presetNames: state => _.map(state.presets, preset => preset.name)
   }),
   watch: {
     isPlaying() {
@@ -45,6 +51,12 @@ export default {
       } else {
         stop.bind(this)();
       }
+    },
+    currentSelectedPreset() {
+      this.$store.commit(
+        mutationTypes.SET_SELECTED_PRESET,
+        this.currentSelectedPreset
+      );
     }
   },
   methods: {
