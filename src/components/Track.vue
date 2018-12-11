@@ -31,6 +31,7 @@
 
 <script>
 import _ from "lodash";
+import audioBufferSlice from "audiobuffer-slice";
 import { mapState } from "vuex";
 import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
@@ -127,9 +128,16 @@ export default {
       if (shouldPlay && !_.isNil(this.sample) && this.active) {
         this.source = this.$audio.audioContext.createBufferSource();
         this.source.connect(this.lowpass);
-        this.source.buffer = this.sample.data();
-        this.source.loop = false;
-        this.source.start(0, 0, 60000 / this.bpm / 4);
+        audioBufferSlice(
+          this.sample.data(),
+          0,
+          60000 / (4 * this.bpm),
+          function(error, slicedBuffer) {
+            this.source.buffer = slicedBuffer;
+            this.source.loop = false;
+            this.source.start();
+          }.bind(this)
+        );
       }
     }
   }
