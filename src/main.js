@@ -17,7 +17,7 @@ const dataArray = new Uint8Array(bufferLength);
 Vue.prototype.$audio = { audioContext, gain, analyser, bufferLength, dataArray };
 
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(120, 5, 1, 1000);
+let camera = new THREE.PerspectiveCamera(70, 1, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = { scene, camera, renderer };

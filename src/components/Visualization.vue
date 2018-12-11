@@ -4,11 +4,15 @@
 
 <script>
 import * as THREE from "three";
+import { mapState } from "vuex";
 
 export default {
   name: "Visualization",
   data: () => ({
-    mesh: null
+    mesh: []
+  }),
+  computed: mapState({
+    trackCount: state => state.trackCount
   }),
 
   methods: {
@@ -24,18 +28,20 @@ export default {
         color: 0xfefefe,
         opacity: 0.5
       });
-      this.mesh = new THREE.Mesh(geometry, material);
-      let geo = new THREE.EdgesGeometry(this.mesh.geometry);
-      let mat = new THREE.LineBasicMaterial({
-        color: 0xffffff,
-        linewidth: 4
-      });
-      let wireframe = new THREE.LineSegments(geo, mat);
+      for(let i = 0; i < this.trackCount; i++){
+          this.mesh[i] = new THREE.Mesh(geometry, material);
+          let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
+          let mat = new THREE.LineBasicMaterial({
+              color: 0xffffff,
+              linewidth: 4
+          });
+          let wireframe = new THREE.LineSegments(geo, mat);
+          this.mesh[i].add(wireframe);
+          this.mesh[i].position.x = i*100;
+          this.$three.scene.add(this.mesh[i]);
+          this.mesh[i].position.z = -100;
+      }
 
-      this.mesh.add(wireframe);
-      this.$three.scene.add(this.mesh);
-      this.mesh.position.z = -100;
-      console.log(this.mesh.position.z);
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
       this.render.bind(this)();
     },
@@ -46,20 +52,23 @@ export default {
           this.$audio.dataArray[20] / 255,
           this.$audio.dataArray[80] / 255
         );*/
-      this.mesh.rotation.x += 0.01;
-      this.mesh.rotation.z += 0.01;
+      _.forEach(this.mesh, function(mesh){
+          mesh.rotation.x += 0.01;
+          mesh.rotation.z += 0.01;
+      });
+
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
       window.requestAnimationFrame(this.render);
     },
     handleResize() {
-      //this.$refs.threeCanvas.width = window.innerWidth;
+        console.log(this.$refs.threeCanvas.clientWidth);
       this.$three.renderer.setSize(
         this.$refs.threeCanvas.clientWidth,
         this.$refs.threeCanvas.clientHeight,
         false
       );
       this.$three.camera.aspect =
-        this.$refs.threeCanvas.width / this.$refs.threeCanvas.height;
+        this.$refs.threeCanvas.clientWidth / this.$refs.threeCanvas.clientHeight;
       this.$three.camera.updateProjectionMatrix();
     }
   },
