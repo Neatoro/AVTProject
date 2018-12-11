@@ -85,9 +85,11 @@ export default {
   mounted() {
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
+    this.lowpass.frequency.value = 18000;
     this.lowpass.type = "lowpass";
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
+    this.highpass.frequency.value = 0;
     this.lowpass
       .connect(this.highpass)
       .connect(this.gain)
