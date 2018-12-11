@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "audiobuffer-slice": "0.0.7",
     "lodash": "^4.17.11",
     "node": "^11.2.0",
     "three": "^0.98.0",
