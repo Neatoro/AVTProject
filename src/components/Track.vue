@@ -57,7 +57,7 @@ export default {
       .connect(this.highpass)
       .connect(this.gain)
       .connect(this.$audio.connector);
-    //this.gain.connect(this.delay).connect(this.$audio.audioContext.destination);
+    this.gain.connect(this.delay).connect(this.$audio.connector);
   },
   watch: {
     currentColumn() {
@@ -66,14 +66,10 @@ export default {
   },
   methods: {
     onDelayTimeValueChange(delay) {
-      // this.delay.delayTime.setValueAtTime(
-      //     delay,
-      //     this.$audio.audioContext.currentTime
-      // );
-      this.delay.delayTime.value = delay;
-      console.log(this.delay.delayTime);
-      // console.log(this.$audio.audioContext.currentTime);
-      // this.delay.delayTime.value = delay;
+      this.delay.delayTime.setValueAtTime(
+        delay,
+        this.$audio.audioContext.currentTime
+      );
     },
     onVolumeChange(volume) {
       this.gain.gain.value = volume / 100;
@@ -97,7 +93,7 @@ export default {
         this.source.connect(this.lowpass);
         this.source.buffer = this.sample.data();
         this.source.loop = false;
-        this.source.start(0, 0, 60000 / this.bpm / 4);
+        this.source.start(0);
         // this.source.start(0);
       }
     }
