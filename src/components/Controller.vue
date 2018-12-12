@@ -68,6 +68,17 @@ export default {
       }
     }
   },
+  mounted: function() {
+    window.addEventListener(
+      "keyup",
+      function(event) {
+        //space-key
+        if (event.keyCode === 32) {
+          this.onPlayPause(event);
+        }
+      }.bind(this)
+    );
+  },
   methods: {
     getPlayPauseLabel() {
       return this.isPlaying ? "Pause" : "Play";
