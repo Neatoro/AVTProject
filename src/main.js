@@ -15,8 +15,7 @@ const highpass = audioContext.createBiquadFilter();
 highpass.type = "highpass";
 highpass.frequency.value = 0;
 connector.connect(highpass);
-highpass.connect(lowpass);
-lowpass.connect(gain);
+connector.connect(lowpass);
 gain.connect(audioContext.destination);
 
 Vue.prototype.$audio = { audioContext, connector, gain, lowpass, highpass };
