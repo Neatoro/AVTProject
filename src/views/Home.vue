@@ -7,6 +7,7 @@
       <input
         ref="fileInput"
         type="file"
+        multiple
         accept="audio/*"
         style="display: none;"
         @change="onLoadSample"
@@ -23,6 +24,7 @@ import Controller from "@/components/Controller.vue";
 import EffectController from "@/components/EffectController.vue";
 import Sequencer from "@/components/Sequencer.vue";
 import Visualization from "@/components/Visualization.vue";
+import _ from "lodash";
 
 export default {
   name: "home",
@@ -40,13 +42,15 @@ export default {
 
     onLoadSample(evt) {
       evt.preventDefault();
-
-      const file = this.$refs.fileInput.files[0];
-
-      this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
-        file,
-        audioContext: this.$audio.audioContext
-      });
+      _.forEach(
+        this.$refs.fileInput.files,
+        _.bind(function(file) {
+          this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
+            file,
+            audioContext: this.$audio.audioContext
+          });
+        }, this)
+      );
     }
   }
 };

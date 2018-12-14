@@ -8,19 +8,29 @@ Vue.config.productionTip = false;
 
 const audioContext = new AudioContext();
 const gain = audioContext.createGain();
+const connector = audioContext.createGain();
+const lowpass = audioContext.createBiquadFilter();
+lowpass.type = "lowpass";
+lowpass.frequency.value = 18000;
+const highpass = audioContext.createBiquadFilter();
+highpass.type = "highpass";
+highpass.frequency.value = 0;
+connector.connect(highpass);
+connector.connect(lowpass);
 gain.connect(audioContext.destination);
 const analyser = audioContext.createAnalyser();
 gain.connect(analyser);
 const bufferLength = analyser.fftSize;
 const dataArray = new Uint8Array(bufferLength);
 
-Vue.prototype.$audio = { audioContext, gain, analyser, bufferLength, dataArray };
+Vue.prototype.$audio = { audioContext, connector, gain, lowpass, highpass, analyser, bufferLength, dataArray };
 
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = { scene, camera, renderer };
+
 
 new Vue({
   router,
