@@ -41,6 +41,7 @@ export default {
       this.$audio.highpass.connect(this.$audio.gain);
     },
     onFilterOffRadio() {
+      this.$audio.connector.connect(this.$audio.gain);
       this.$audio.lowpass.disconnect(this.$audio.gain);
       this.$audio.highpass.disconnect(this.$audio.gain);
     },
