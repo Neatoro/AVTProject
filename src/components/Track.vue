@@ -18,7 +18,7 @@
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
-    <input type="checkbox" class="checkbox" v-model="active">
+    <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <Step
       ref="steps"
       v-for="n in 16"
@@ -33,8 +33,12 @@
 import _ from "lodash";
 import audioBufferSlice from "audiobuffer-slice";
 import { mapState } from "vuex";
+import { mutationTypes } from "@/store";
 import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
+
+const INITIAL_LOWPASS_VALUE = 18000;
+const INITIAL_HIGHPASS_VALUE = 0;
 
 export default {
   name: "Track",
@@ -49,7 +53,6 @@ export default {
     }
   },
   data: () => ({
-    active: true,
     selectedSample: null,
     source: null,
     lowpass: null,
@@ -67,6 +70,9 @@ export default {
         }.bind(this)
       );
     },
+    trackInformation(state) {
+      return _.find(state.tracks, track => track.id === this.id);
+    },
     currentColumn: state => state.currentColumn,
     bpm: state => state.bpm,
     presetName: state => state.selectedPreset,
@@ -82,19 +88,40 @@ export default {
       );
     }
   }),
+  created() {
+    this.$store.commit(mutationTypes.ADD_TRACK, {
+      id: this.id,
+      muted: false,
+      selectedSample: "",
+      lowpass: INITIAL_LOWPASS_VALUE,
+      highpass: INITIAL_HIGHPASS_VALUE,
+      stepData: this.stepData,
+      volume: 100,
+      analyser: null
+    });
+  },
   mounted() {
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
-    this.lowpass.frequency.value = 18000;
+    this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
     this.lowpass.type = "lowpass";
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
-    this.highpass.frequency.value = 0;
+    this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
+
+    const analyser = this.$audio.audioContext.createAnalyser();
+
     this.lowpass
       .connect(this.highpass)
       .connect(this.gain)
       .connect(this.$audio.connector);
-    console.log(undefined);
+
+    this.gain.connect(analyser);
+
+    this.$store.commit(mutationTypes.UPDATE_ANALYSER_OF_TRACK, {
+      trackId: this.id,
+      analyserFunction: () => analyser
+    });
   },
   watch: {
     currentColumn() {
@@ -107,27 +134,57 @@ export default {
       this.stepData = _.isUndefined(presetStepData)
         ? _.map(_.range(0, 16), () => false)
         : presetStepData;
+    },
+    stepData() {
+      this.$store.commit(mutationTypes.UPDATE_STEP_DATA_OF_TRACK, {
+        trackId: this.id,
+        stepData: this.stepData
+      });
+    },
+    ["trackInformation.lowpass"]() {
+      this.lowpass.frequency.setValueAtTime(
+        this.trackInformation.lowpass,
+        this.$audio.audioContext.currentTime
+      );
+    },
+    ["trackInformation.highpass"]() {
+      this.highpass.frequency.setValueAtTime(
+        this.trackInformation.highpass,
+        this.$audio.audioContext.currentTime
+      );
+    },
+    ["trackInformation.volume"]() {
+      this.gain.gain.value = this.trackInformation.volume / 100;
     }
   },
   methods: {
+    onMutedChanged(evt) {
+      this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
+        trackId: this.id,
+        muted: evt.target.checked
+      });
+    },
     onVolumeChange(volume) {
-      this.gain.gain.value = volume / 100;
+      this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
+        trackId: this.id,
+        volume
+      });
     },
     onLowpassValueChanged(lowpass) {
-      this.lowpass.frequency.setValueAtTime(
-        lowpass,
-        this.$audio.audioContext.currentTime
-      );
+      this.$store.commit(mutationTypes.UPDATE_LOWPASS_OF_TRACK, {
+        trackId: this.id,
+        lowpass
+      });
     },
     onHighpassValueChanged(highpass) {
-      this.highpass.frequency.setValueAtTime(
-        highpass,
-        this.$audio.audioContext.currentTime
-      );
+      this.$store.commit(mutationTypes.UPDATE_HIGHPASS_OF_TRACK, {
+        trackId: this.id,
+        highpass
+      });
     },
     play() {
-      const shouldPlay = this.stepData[this.currentColumn];
-      if (shouldPlay && !_.isNil(this.sample) && this.active) {
+      const shouldPlay = this.trackInformation.stepData[this.currentColumn];
+      if (shouldPlay && !_.isNil(this.sample) && !this.trackInformation.muted) {
         this.source = this.$audio.audioContext.createBufferSource();
         this.source.connect(this.lowpass);
         audioBufferSlice(

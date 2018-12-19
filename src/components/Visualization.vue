@@ -1,5 +1,5 @@
 <template>
-        <canvas id="threeCanvas" ref="threeCanvas"></canvas>
+  <canvas id="threeCanvas" ref="threeCanvas"></canvas>
 </template>
 
 <script>
@@ -12,7 +12,8 @@ export default {
     mesh: []
   }),
   computed: mapState({
-    trackCount: state => state.trackCount
+    trackCount: state => state.trackCount,
+    tracks: state => state.tracks
   }),
   watch: {
     trackCount() {
@@ -48,11 +49,15 @@ export default {
       });
       let wireframe = new THREE.LineSegments(geo, mat);
       this.mesh[i].add(wireframe);
-      this.mesh[i].position.x = (i * 100) - 300;
+      this.mesh[i].position.x = i * 100 - 300;
       this.$three.scene.add(this.mesh[i]);
       this.mesh[i].position.z = -100;
     },
     render() {
+      // _.forEach(this.tracks, function(track) {
+      //   track.analyser()
+      // }.bind(this));
+
       this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
       /*this.wireframe.color = new THREE.Color(
           this.$audio.dataArray[0] / 255,

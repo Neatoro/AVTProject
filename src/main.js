@@ -23,14 +23,22 @@ gain.connect(analyser);
 const bufferLength = analyser.fftSize;
 const dataArray = new Uint8Array(bufferLength);
 
-Vue.prototype.$audio = { audioContext, connector, gain, lowpass, highpass, analyser, bufferLength, dataArray };
+Vue.prototype.$audio = {
+  audioContext,
+  connector,
+  gain,
+  lowpass,
+  highpass,
+  analyser,
+  bufferLength,
+  dataArray
+};
 
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = { scene, camera, renderer };
-
 
 new Vue({
   router,
