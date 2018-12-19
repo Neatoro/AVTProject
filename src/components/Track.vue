@@ -19,6 +19,7 @@
       @change="onHighpassValueChanged"
     ></Slider>
     <input type="checkbox" class="checkbox" @change="onMutedChanged">
+    <input type="checkbox" class="checkbox" @change="onSoloChanged">
     <Step
       ref="steps"
       v-for="n in 16"
@@ -73,6 +74,10 @@ export default {
     trackInformation(state) {
       return _.find(state.tracks, track => track.id === this.id);
     },
+    isAnySongSolo: state =>
+      _(state.tracks)
+        .map(track => track.solo)
+        .includes(true),
     currentColumn: state => state.currentColumn,
     bpm: state => state.bpm,
     presetName: state => state.selectedPreset,
@@ -92,6 +97,7 @@ export default {
     this.$store.commit(mutationTypes.ADD_TRACK, {
       id: this.id,
       muted: false,
+      solo: false,
       selectedSample: "",
       lowpass: INITIAL_LOWPASS_VALUE,
       highpass: INITIAL_HIGHPASS_VALUE,
@@ -164,6 +170,12 @@ export default {
         muted: evt.target.checked
       });
     },
+    onSoloChanged(evt) {
+      this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
+        trackId: this.id,
+        solo: evt.target.checked
+      });
+    },
     onVolumeChange(volume) {
       this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
         trackId: this.id,
@@ -184,7 +196,12 @@ export default {
     },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
-      if (shouldPlay && !_.isNil(this.sample) && !this.trackInformation.muted) {
+      if (
+        shouldPlay &&
+        !_.isNil(this.sample) &&
+        !this.trackInformation.muted &&
+        (!this.isAnySongSolo || this.trackInformation.solo)
+      ) {
         this.source = this.$audio.audioContext.createBufferSource();
         this.source.connect(this.lowpass);
         audioBufferSlice(

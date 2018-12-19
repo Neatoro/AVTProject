@@ -18,7 +18,8 @@ export const mutationTypes = {
   UPDATE_STEP_DATA_OF_TRACK: "UPDATE_STEP_DATA_OF_TRACK",
   UPDATE_LOWPASS_OF_TRACK: "UPDATE_LOWPASS_OF_TRACK",
   UPDATE_HIGHPASS_OF_TRACK: "UPDATE_HIGHPASS_OF_TRACK",
-  UPDATE_ANALYSER_OF_TRACK: "UPDATE_ANALYSER_OF_TRACK"
+  UPDATE_ANALYSER_OF_TRACK: "UPDATE_ANALYSER_OF_TRACK",
+  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK"
 };
 
 export const actionTypes = {
@@ -117,6 +118,14 @@ export default new Vuex.Store({
         trackId,
         value: analyserFunction,
         key: "analyser"
+      });
+    },
+    [mutationTypes.UPDATE_SOLO_OF_TRACK](state, { trackId, solo }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: solo,
+        key: "solo"
       });
     }
   },
