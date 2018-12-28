@@ -129,14 +129,14 @@ export default new Vuex.Store({
         key: "solo"
       });
     },
-      [mutationTypes.UPDATE_PANNING_OF_TRACK](state, { trackId, panning }) {
-          privateMethods.updateTrackData({
-              state,
-              trackId,
-              value: panning,
-              key: "panning"
-          });
-      }
+    [mutationTypes.UPDATE_PANNING_OF_TRACK](state, { trackId, panning }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: panning,
+        key: "panning"
+      });
+    }
   },
   actions: {
     [actionTypes.LOAD_SAMPLE]({ commit }, { audioContext, file }) {

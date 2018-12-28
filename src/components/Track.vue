@@ -26,6 +26,10 @@
               :defaultValue="0"
               @change="onPanningValueChanged"
       ></Slider>
+      <Slider title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandChanged"></Slider>
+      <Slider title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandChanged"></Slider>
+      <Slider title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandChanged"></Slider>
+
     <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <input type="checkbox" class="checkbox" @change="onSoloChanged">
     <Step
@@ -49,6 +53,7 @@ import Step from "@/components/Step.vue";
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
 const INITIAL_PANNING_VALUE = 0;
+const INITIAL_EQ_GAIN = 0;
 
 export default {
   name: "Track",
@@ -68,7 +73,10 @@ export default {
     lowpass: null,
     highpass: null,
     gain: null,
-      panning: null,
+    panning: null,
+    lBand: null,
+    mBand: null,
+    hBand: null,
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
@@ -111,7 +119,7 @@ export default {
       selectedSample: "",
       lowpass: INITIAL_LOWPASS_VALUE,
       highpass: INITIAL_HIGHPASS_VALUE,
-        panning: INITIAL_PANNING_VALUE,
+      panning: INITIAL_PANNING_VALUE,
       stepData: this.stepData,
       volume: 100,
       analyser: null
@@ -127,12 +135,26 @@ export default {
     this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
     this.panning = this.$audio.audioContext.createStereoPanner();
     this.panning.pan.value = INITIAL_PANNING_VALUE;
-
+    this.lBand = this.$audio.audioContext.createBiquadFilter();
+    this.lBand.type = "lowshelf";
+    this.lBand.frequency.value = 360;
+    this.lBand.gain.value = INITIAL_EQ_GAIN;
+    this.mBand = this.$audio.audioContext.createBiquadFilter();
+    this.mBand.type = "peaking";
+    this.mBand.frequency.value = 3600;
+    this.mBand.gain.value = INITIAL_EQ_GAIN;
+    this.hBand = this.$audio.audioContext.createBiquadFilter();
+    this.hBand.type = "lowshelf";
+    this.hBand.frequency.value = 13060;
+    this.hBand.gain.value = INITIAL_EQ_GAIN;
     const analyser = this.$audio.audioContext.createAnalyser();
 
     this.lowpass
       .connect(this.highpass)
-        .connect(this.panning)
+      .connect(this.panning)
+      .connect(this.lBand)
+      .connect(this.mBand)
+      .connect(this.hBand)
       .connect(this.gain)
       .connect(this.$audio.connector);
 
@@ -173,9 +195,9 @@ export default {
         this.$audio.audioContext.currentTime
       );
     },
-      ["trackInformation.panning"]() {
-          this.panning.pan.value = this.trackInformation.panning;
-      },
+    ["trackInformation.panning"]() {
+      this.panning.pan.value = this.trackInformation.panning;
+    },
     ["trackInformation.volume"]() {
       this.gain.gain.value = this.trackInformation.volume / 100;
     }
@@ -211,12 +233,21 @@ export default {
         highpass
       });
     },
-      onPanningValueChanged(panning) {
-          this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
-              trackId: this.id,
-              panning
-          });
-      },
+    onPanningValueChanged(panning) {
+      this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
+        trackId: this.id,
+        panning
+      });
+    },
+    onLBandChanged(lBand) {
+      this.lBand.gain.value = lBand;
+    },
+    onMBandChanged(mBand) {
+      this.mBand.gain.value = mBand;
+    },
+    onHBandChanged(hBand) {
+      this.mBand.gain.value = hBand;
+    },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
       if (
