@@ -120,6 +120,9 @@ export default {
       lowpass: INITIAL_LOWPASS_VALUE,
       highpass: INITIAL_HIGHPASS_VALUE,
       panning: INITIAL_PANNING_VALUE,
+      lBand: INITIAL_EQ_GAIN,
+      mBand: INITIAL_EQ_GAIN,
+      hBand: INITIAL_EQ_GAIN,
       stepData: this.stepData,
       volume: 100,
       analyser: null
@@ -200,6 +203,15 @@ export default {
     },
     ["trackInformation.volume"]() {
       this.gain.gain.value = this.trackInformation.volume / 100;
+    },
+    ["trackInformation.lBand"]() {
+      this.lBand.gain.value = this.trackInformation.lBand;
+    },
+    ["trackInformation.mBand"]() {
+      this.mBand.gain.value = this.trackInformation.mBand;
+    },
+    ["trackInformation.hBand"]() {
+      this.hBand.gain.value = this.trackInformation.hBand;
     }
   },
   methods: {
@@ -240,13 +252,22 @@ export default {
       });
     },
     onLBandChanged(lBand) {
-      this.lBand.gain.value = lBand;
+      this.$store.commit(mutationTypes.UPDATE_LBAND_OF_TRACK, {
+        trackId: this.id,
+        lBand
+      });
     },
     onMBandChanged(mBand) {
-      this.mBand.gain.value = mBand;
+      this.$store.commit(mutationTypes.UPDATE_MBAND_OF_TRACK, {
+        trackId: this.id,
+        mBand
+      });
     },
     onHBandChanged(hBand) {
-      this.mBand.gain.value = hBand;
+      this.$store.commit(mutationTypes.UPDATE_HBAND_OF_TRACK, {
+        trackId: this.id,
+        hBand
+      });
     },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
