@@ -5,6 +5,7 @@
 <script>
 import * as THREE from "three";
 import { mapState } from "vuex";
+import _ from "lodash";
 
 export default {
   name: "Visualization",

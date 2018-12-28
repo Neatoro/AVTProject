@@ -31,19 +31,42 @@ export default {
   components: {
     Slider
   },
+  data: () => ({
+    filterState: ""
+  }),
   methods: {
     onLowRadio() {
-      this.$audio.lowpass.connect(this.$audio.gain);
-      this.$audio.highpass.disconnect(this.$audio.gain);
+      if (this.filterState !== "low") {
+        this.$audio.lowpass.connect(this.$audio.gain);
+        if (this.filterState === "high") {
+          this.$audio.highpass.disconnect(this.$audio.gain);
+        } else if (this.filterState === "off") {
+          this.$audio.connector.disconnect(this.$audio.gain);
+        }
+        this.filterState = "low";
+      }
     },
     onHighRadio() {
-      this.$audio.lowpass.disconnect(this.$audio.gain);
-      this.$audio.highpass.connect(this.$audio.gain);
+      if (this.filterState !== "high") {
+        this.$audio.highpass.connect(this.$audio.gain);
+        if (this.filterState === "low") {
+          this.$audio.lowpass.disconnect(this.$audio.gain);
+        } else if (this.filterState === "off") {
+          this.$audio.connector.disconnect(this.$audio.gain);
+        }
+        this.filterState = "high";
+      }
     },
     onFilterOffRadio() {
-      this.$audio.connector.connect(this.$audio.gain);
-      this.$audio.lowpass.disconnect(this.$audio.gain);
-      this.$audio.highpass.disconnect(this.$audio.gain);
+      if (this.filterState === "high") {
+        this.$audio.highpass.disconnect(this.$audio.gain);
+      } else if (this.filterState === "low") {
+        this.$audio.lowpass.disconnect(this.$audio.gain);
+      }
+      if (this.filterState !== "off") {
+        this.$audio.connector.connect(this.$audio.gain);
+        this.filterState = "off";
+      }
     },
     onLowpassValueChanged(lowpass) {
       this.$audio.lowpass.frequency.setValueAtTime(
@@ -57,6 +80,9 @@ export default {
         this.$audio.audioContext.currentTime
       );
     }
+  },
+  mounted() {
+    this.onFilterOffRadio();
   }
 };
 </script>
