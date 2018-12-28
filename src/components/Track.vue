@@ -18,6 +18,14 @@
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
+      <Slider
+              title="Panning"
+              :min="-1"
+              :max="1"
+              :step="0.1"
+              :defaultValue="0"
+              @change="onPanningValueChanged"
+      ></Slider>
     <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <input type="checkbox" class="checkbox" @change="onSoloChanged">
     <Step
@@ -40,6 +48,7 @@ import Step from "@/components/Step.vue";
 
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
+const INITIAL_PANNING_VALUE = 0;
 
 export default {
   name: "Track",
@@ -59,6 +68,7 @@ export default {
     lowpass: null,
     highpass: null,
     gain: null,
+      panning: null,
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
@@ -101,6 +111,7 @@ export default {
       selectedSample: "",
       lowpass: INITIAL_LOWPASS_VALUE,
       highpass: INITIAL_HIGHPASS_VALUE,
+        panning: INITIAL_PANNING_VALUE,
       stepData: this.stepData,
       volume: 100,
       analyser: null
@@ -114,11 +125,14 @@ export default {
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
     this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
+    this.panning = this.$audio.audioContext.createStereoPanner();
+    this.panning.pan.value = INITIAL_PANNING_VALUE;
 
     const analyser = this.$audio.audioContext.createAnalyser();
 
     this.lowpass
       .connect(this.highpass)
+        .connect(this.panning)
       .connect(this.gain)
       .connect(this.$audio.connector);
 
@@ -159,6 +173,9 @@ export default {
         this.$audio.audioContext.currentTime
       );
     },
+      ["trackInformation.panning"]() {
+          this.panning.pan.value = this.trackInformation.panning;
+      },
     ["trackInformation.volume"]() {
       this.gain.gain.value = this.trackInformation.volume / 100;
     }
@@ -194,6 +211,12 @@ export default {
         highpass
       });
     },
+      onPanningValueChanged(panning) {
+          this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
+              trackId: this.id,
+              panning
+          });
+      },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
       if (

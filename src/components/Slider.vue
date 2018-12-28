@@ -1,7 +1,7 @@
 <template>
   <div class="slider">
     <p class="slider__title">{{title}}: {{ value }}</p>
-    <input type="range" :min="min" :max="max" v-model="value" class="slider__control">
+      <input type="range" :min="min" :max="max" v-model="value" :step="step" class="slider__control">
   </div>
 </template>
 
@@ -12,7 +12,8 @@ export default {
     title: String,
     min: Number,
     max: Number,
-    defaultValue: {
+      step: Number,
+      defaultValue: {
       type: Number,
       default: 0
     }
