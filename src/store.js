@@ -19,7 +19,8 @@ export const mutationTypes = {
   UPDATE_LOWPASS_OF_TRACK: "UPDATE_LOWPASS_OF_TRACK",
   UPDATE_HIGHPASS_OF_TRACK: "UPDATE_HIGHPASS_OF_TRACK",
   UPDATE_ANALYSER_OF_TRACK: "UPDATE_ANALYSER_OF_TRACK",
-  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK"
+  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK",
+  UPDATE_PANNING_OF_TRACK: "UPDATE_PANNING_OF_TRACK"
 };
 
 export const actionTypes = {
@@ -127,7 +128,15 @@ export default new Vuex.Store({
         value: solo,
         key: "solo"
       });
-    }
+    },
+      [mutationTypes.UPDATE_PANNING_OF_TRACK](state, { trackId, panning }) {
+          privateMethods.updateTrackData({
+              state,
+              trackId,
+              value: panning,
+              key: "panning"
+          });
+      }
   },
   actions: {
     [actionTypes.LOAD_SAMPLE]({ commit }, { audioContext, file }) {
