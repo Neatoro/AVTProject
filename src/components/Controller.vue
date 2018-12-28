@@ -1,24 +1,72 @@
 <template>
-    <div class="controller">
-        <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
-        <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
-        <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
-    </div>
+
+  <div class="controller">
+    <select v-model="currentSelectedPreset">
+      <option v-for="presetName in presetNames" :key="presetName">{{ presetName }}</option>
+    </select>
+    <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
+    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
+    <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
+  </div>
 </template>
 
 <script>
-    import {mapState} from "vuex";
-    import {actionTypes, mutationTypes} from "@/store";
-    import Slider from "@/components/Slider.vue";
+import _ from "lodash";
+import { mapState } from "vuex";
+import { actionTypes, mutationTypes } from "@/store";
+import Interval from "@/utils/editableInterval";
+import Slider from "@/components/Slider.vue";
 
-    function tick() {
-        this.$store.dispatch(actionTypes.NEXT_COLUMN);
-    }
+function tick() {
+  this.$store.dispatch(actionTypes.NEXT_COLUMN);
+}
 
-    function start() {
-        const timing = 60000 / (this.bpm *4 );
-        console.log(timing);
-        this.interval = setInterval(tick.bind(this), timing);
+function start() {
+  const timing = calcualteTiming(this.bpm);
+  this.interval = new Interval(timing, tick.bind(this));
+  this.interval.start();
+}
+
+function stop() {
+  this.interval.stop();
+}
+
+function calcualteTiming(bpm) {
+  return 60000 / (16 * bpm);
+}
+
+export default {
+  name: "Controller",
+  components: {
+    Slider
+  },
+  data: () => ({
+    interval: undefined,
+    currentSelectedPreset: "None"
+  }),
+  computed: mapState({
+    isPlaying: state => state.isPlaying,
+    bpm: state => state.bpm,
+    presetNames: state => _.map(state.presets, preset => preset.name)
+  }),
+  watch: {
+    isPlaying() {
+      if (this.isPlaying) {
+        start.bind(this)();
+      } else {
+        stop.bind(this)();
+      }
+    },
+    currentSelectedPreset() {
+      this.$store.commit(
+        mutationTypes.SET_SELECTED_PRESET,
+        this.currentSelectedPreset
+      );
+    },
+    bpm() {
+      if (!_.isUndefined(this.interval)) {
+        this.interval.interval = calcualteTiming(this.bpm);
+      }
     }
 
     function stop() {

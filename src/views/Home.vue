@@ -24,7 +24,9 @@ import Controller from "@/components/Controller.vue";
 import EffectController from "@/components/EffectController.vue";
 import Sequencer from "@/components/Sequencer.vue";
 import Visualization from "@/components/Visualization.vue";
-import * as _ from "lodash";
+
+import _ from "lodash";
+
 
 export default {
   name: "home",
@@ -51,13 +53,6 @@ export default {
           });
         }, this)
       );
-      // for (let i = 0; i < this.$refs.fileInput.files.length; i++) {
-      //   let file = this.$refs.fileInput.files[i];
-      //   this.$store.dispatch(actionTypes.LOAD_SAMPLE, {
-      //     file,
-      //     audioContext: this.$audio.audioContext
-      //   });
-      // }
     }
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="sequencer">
-    <Track v-for="n in trackCount" :key="n"/>
-    <button class="adder" @click="onAddTrack">+</button>
+    <Track v-for="n in trackCount" :key="n" :id="n"/>
+    <button :disabled="trackCount === 8" class="adder" @click="onAddTrack">+</button>
   </div>
 </template>
 
