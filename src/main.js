@@ -14,12 +14,10 @@ lowpass.frequency.value = 18000;
 const highpass = audioContext.createBiquadFilter();
 highpass.type = "highpass";
 highpass.frequency.value = 0;
-const reverb = audioContext.createConvolver();
 connector.connect(highpass);
 
 highpass
   .connect(lowpass)
-  // .connect(reverb)
   .connect(gain);
 gain.connect(audioContext.destination);
 
@@ -29,7 +27,6 @@ Vue.prototype.$audio = {
   gain,
   lowpass,
   highpass,
-  reverb
 };
 
 new Vue({
