@@ -18,7 +18,8 @@
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
-    <input type="checkbox" class="checkbox" @change="onMutedChanged">
+      <Slider title="Delay" :min="0" :max="5" :defaultValue="0" :step="0.1" @change="onDelayTimeValueChange"></Slider>
+      <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <input type="checkbox" class="checkbox" @change="onSoloChanged">
     <Step
       ref="steps"
@@ -59,6 +60,7 @@ export default {
     lowpass: null,
     highpass: null,
     gain: null,
+    delay: null,
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
@@ -114,6 +116,7 @@ export default {
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
     this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
+    this.delay = this.$audio.audioContext.createDelay(5);
 
     const analyser = this.$audio.audioContext.createAnalyser();
 
@@ -121,6 +124,7 @@ export default {
       .connect(this.highpass)
       .connect(this.gain)
       .connect(this.$audio.connector);
+    this.gain.connect(this.delay).connect(this.$audio.connector);
 
     this.gain.connect(analyser);
 
@@ -193,6 +197,12 @@ export default {
         trackId: this.id,
         highpass
       });
+    },
+    onDelayTimeValueChange(delay) {
+      this.delay.delayTime.setValueAtTime(
+        delay,
+        this.$audio.audioContext.currentTime
+      );
     },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
