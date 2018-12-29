@@ -56,7 +56,7 @@ export default {
     }
   },
   PLAY: {
-    keyCode: 108,
+    keyCode: 104,
     event: "play",
     data: {}
   }

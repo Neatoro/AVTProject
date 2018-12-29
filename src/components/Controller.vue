@@ -43,9 +43,6 @@ export default {
     interval: undefined,
     currentSelectedPreset: "None"
   }),
-  mounted() {
-    this.$midi.eventBus.addEventListener("play", this.onPlayPause);
-  },
   computed: mapState({
     isPlaying: state => state.isPlaying,
     bpm: state => state.bpm,
@@ -72,6 +69,7 @@ export default {
     }
   },
   mounted: function() {
+      this.$midi.eventBus.addEventListener("play", this.onPlayPause);
     window.addEventListener(
       "keyup",
       function(event) {
