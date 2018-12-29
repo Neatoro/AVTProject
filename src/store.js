@@ -24,6 +24,7 @@ export const mutationTypes = {
   UPDATE_LBAND_OF_TRACK: "UPDATE_LBAND_OF_TRACK",
   UPDATE_MBAND_OF_TRACK: "UPDATE_MBAND_OF_TRACK",
   UPDATE_HBAND_OF_TRACK: "UPDATE_HBAND_OF_TRACK"
+  SELECT_TRACK: "SELECT_TRACK"
 };
 
 export const actionTypes = {
@@ -49,6 +50,7 @@ export default new Vuex.Store({
     currentColumn: 0,
     selectedPreset: "None",
     presets,
+    selectedTrack: 1,
     tracks: []
   },
   mutations: {
@@ -163,6 +165,9 @@ export default new Vuex.Store({
         value: hBand,
         key: "hBand"
       });
+    },
+    [mutationTypes.SELECT_TRACK](state, trackId) {
+      Vue.set(state, "selectedTrack", trackId);
     }
   },
   actions: {

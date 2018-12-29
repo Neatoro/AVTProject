@@ -43,6 +43,9 @@ export default {
     interval: undefined,
     currentSelectedPreset: "None"
   }),
+  mounted() {
+    this.$midi.eventBus.addEventListener("play", this.onPlayPause);
+  },
   computed: mapState({
     isPlaying: state => state.isPlaying,
     bpm: state => state.bpm,
