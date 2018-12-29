@@ -26,67 +26,65 @@ const bufferLength = analyser.fftSize;
 const dataArray = new Uint8Array(bufferLength);
 
 Vue.prototype.$audio = {
-  audioContext,
-  connector,
-  gain,
-  lowpass,
-  highpass,
-  analyser,
-  bufferLength,
-  dataArray
+    audioContext,
+    connector,
+    gain,
+    lowpass,
+    highpass,
+    analyser,
+    bufferLength,
+    dataArray
 };
 
 const eventBus = new EventTarget();
 Vue.prototype.$midi = {
-  eventBus
+    eventBus
 };
 
 if (navigator.requestMIDIAccess) {
-  navigator.requestMIDIAccess().then(
-    midiAccess => {
-      eventBus.addEventListener("track_changed", evt =>
-        console.log(evt.detail)
-      );
+    navigator.requestMIDIAccess().then(
+        midiAccess => {
+            eventBus.addEventListener("track_changed", evt =>
+                console.log(evt.detail)
+            );
+            Vue.prototype.$midi = {
+                active: true,
+                midiAccess,
+                eventBus
+            };
 
-      Vue.prototype.$midi = {
-        active: true,
-        midiAccess,
-        eventBus
-      };
+            for (let input of midiAccess.inputs.values()) {
+                input.onmidimessage = function (evt) {
+                    const note = evt.data[1];
+                    const mapping = _(mappings)
+                        .values()
+                        .find(mapping => mapping.keyCode === note);
 
-      for (let input of midiAccess.inputs.values()) {
-        input.onmidimessage = function(evt) {
-          const note = evt.data[1];
-
-          const mapping = _(mappings)
-            .values()
-            .find(mapping => mapping.keyCode === note);
-
-          if (!_.isUndefined(mapping)) {
-            const event = new CustomEvent(mapping.event, {
-              detail: mapping.data
-            });
-            eventBus.dispatchEvent(event);
-          }
-        };
-      }
-    },
-    () => {
-      Vue.prototype.$midi = {
-        active: false
-      };
-    }
-  );
+                    if (!_.isUndefined(mapping)) {
+                        const event = new CustomEvent(mapping.event, {
+                            detail: mapping.data
+                        });
+                        eventBus.dispatchEvent(event);
+                    }
+                };
+            }
+        },
+        () => {
+            Vue.prototype.$midi = {
+                active: false
+            };
+        }
+    );
 }
 
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
 let renderer;
 
-Vue.prototype.$three = { scene, camera, renderer };
+Vue.prototype.$three = {scene, camera, renderer};
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");
