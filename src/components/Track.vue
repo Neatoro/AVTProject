@@ -5,20 +5,23 @@
     </select>
     <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
     <Slider
-      title="Lowpass"
+            ref="lowpass"
+            title="Lowpass"
       :min="0"
       :max="18000"
       :defaultValue="18000"
       @change="onLowpassValueChanged"
     ></Slider>
     <Slider
-      title="Highpass"
+            ref="highpass"
+            title="Highpass"
       :min="0"
       :max="18000"
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
       <Slider
+              ref="panning"
               title="Panning"
               :min="-1"
               :max="1"
@@ -26,9 +29,9 @@
               :defaultValue="0"
               @change="onPanningValueChanged"
       ></Slider>
-      <Slider title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandChanged"></Slider>
-      <Slider title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandChanged"></Slider>
-      <Slider title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandChanged"></Slider>
+      <Slider ref="lBand" title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandValueChanged"></Slider>
+      <Slider ref="mBand" title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandValueChanged"></Slider>
+      <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider>
 
     <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <input type="checkbox" class="checkbox" @change="onSoloChanged">
@@ -169,6 +172,20 @@ export default {
     });
   },
   watch: {
+    selectedSample() {
+      this.onLowpassValueChanged(INITIAL_LOWPASS_VALUE);
+      this.$refs.lowpass.value = INITIAL_LOWPASS_VALUE;
+      this.onHighpassValueChanged(INITIAL_HIGHPASS_VALUE);
+      this.$refs.highpass.value = INITIAL_HIGHPASS_VALUE;
+      this.onPanningValueChanged(INITIAL_PANNING_VALUE);
+      this.$refs.panning.value = INITIAL_PANNING_VALUE;
+      this.onLBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.lBand.value = INITIAL_EQ_GAIN;
+      this.onMBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.mBand.value = INITIAL_EQ_GAIN;
+      this.onHBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.hBand.value = INITIAL_EQ_GAIN;
+    },
     currentColumn() {
       this.play();
     },
@@ -251,19 +268,19 @@ export default {
         panning
       });
     },
-    onLBandChanged(lBand) {
+    onLBandValueChanged(lBand) {
       this.$store.commit(mutationTypes.UPDATE_LBAND_OF_TRACK, {
         trackId: this.id,
         lBand
       });
     },
-    onMBandChanged(mBand) {
+    onMBandValueChanged(mBand) {
       this.$store.commit(mutationTypes.UPDATE_MBAND_OF_TRACK, {
         trackId: this.id,
         mBand
       });
     },
-    onHBandChanged(hBand) {
+    onHBandValueChanged(hBand) {
       this.$store.commit(mutationTypes.UPDATE_HBAND_OF_TRACK, {
         trackId: this.id,
         hBand
