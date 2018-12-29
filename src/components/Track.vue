@@ -30,6 +30,10 @@ import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
 import Toggle from "@/components/common/Toggle.vue";
 
+import MidiMuted from "@/components/midi/track/Muted.vue";
+import MidiSolo from "@/components/midi/track/Solo.vue";
+import MidiStep from "@/components/midi/track/Step.vue";
+
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
 const INITIAL_PANNING_VALUE = 0;
@@ -48,6 +52,7 @@ export default {
       required: true
     }
   },
+  mixins: [MidiMuted, MidiSolo, MidiStep],
   data: () => ({
     source: null,
     selectedSample: null,
@@ -65,6 +70,7 @@ export default {
     isSelected(state) {
       return state.selectedTrack === this.id;
     },
+    masterButtonsPressed: state => state.masterButtonsPressed,
     sampleNames: state => _.map(state.samples, sample => sample.name),
     sample(state) {
       return _.find(
@@ -89,7 +95,6 @@ export default {
         state.presets,
         preset => preset.name === state.selectedPreset
       );
-
       return _.find(
         _.get(selectedPreset, "tracks", []),
         _.bind(track => track.id === this.id, this)
@@ -139,7 +144,6 @@ export default {
     this.hBand.gain.value = INITIAL_EQ_GAIN;
 
     const analyser = this.$audio.audioContext.createAnalyser();
-
     this.lowpass
       .connect(this.highpass)
       .connect(this.panning)
@@ -149,9 +153,7 @@ export default {
       .connect(this.gain)
       .connect(this.$audio.connector);
     this.gain.connect(this.delay).connect(this.$audio.connector);
-
     this.gain.connect(analyser);
-
     this.$store.commit(mutationTypes.UPDATE_ANALYSER_OF_TRACK, {
       trackId: this.id,
       analyserFunction: () => analyser
@@ -195,7 +197,9 @@ export default {
         propName: "hBand"
       });
     },
-    currentColumn: "play",
+    currentColumn() {
+      this.play();
+    },
     presetName() {
       const presetStepData = _.clone(
         _.get(this.currentPresetForTrack, "steps")

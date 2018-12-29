@@ -90,6 +90,13 @@ import { mapState } from "vuex";
 import { mutationTypes } from "@/store";
 import Toggle from "@/components/common/Toggle.vue";
 
+import MidiVolume from "@/components/midi/track/Volume.vue";
+import MidiHighpass from "@/components/midi/track/Highpass.vue";
+import MidiLowpass from "@/components/midi/track/Lowpass.vue";
+import MidiDelay from "@/components/midi/track/Delay.vue";
+import MidiPanning from "@/components/midi/track/Panning.vue";
+import MidiBand from "@/components/midi/track/Band.vue";
+
 export default {
   name: "TrackController",
   components: {
@@ -102,6 +109,14 @@ export default {
     trackInformation: state =>
       _.find(state.tracks, track => track.id === state.selectedTrack)
   }),
+  mixins: [
+    MidiVolume,
+    MidiHighpass,
+    MidiLowpass,
+    MidiDelay,
+    MidiPanning,
+    MidiBand
+  ],
   watch: {
     selectedTrack() {
       this.$refs.volume.value = this.trackInformation.volume;
