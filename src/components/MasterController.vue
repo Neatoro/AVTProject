@@ -108,6 +108,7 @@ export default {
     }
   },
   mounted: function() {
+    this.$midi.eventBus.addEventListener("play", this.onPlayPause);
     window.addEventListener(
       "keyup",
       function(event) {
