@@ -76,6 +76,7 @@ export default {
         this.$midi.eventBus.addEventListener("masterKnob", this.onMidiBPMChanged);
         this.$midi.eventBus.addEventListener("mVolume", this.onMidiMasterVolume);
         this.$midi.eventBus.addEventListener("tempo", this.onMidiTempo);
+        this.$midi.eventBus.addEventListener("track_changed", this.onTrackChanged);
         window.addEventListener(
             "keyup",
             function (event) {
@@ -144,6 +145,12 @@ export default {
                 case 0: this.tempo = false;
                     break;
             }
+        },
+        onTrackChanged(track) {
+            this.$store.commit(
+                mutationTypes.SELECT_TRACK,
+                track.detail[0]
+            );
         }
     }
 }
