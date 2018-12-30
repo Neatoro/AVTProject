@@ -60,9 +60,20 @@ export default {
     event: "play",
     data: {}
   },
-  MASTER_VOLUME: {
+  MASTER_KNOB: {
     keyCode: 101,
-    event: "mVolume",
+    event: "masterKnob",
     data: {}
+  },
+  MASTER_VOLUME: {
+      keyCode: 7,
+      event: "mVolume",
+      data: {}
+  },
+  TEMPO: {
+      keyCode: 3,
+      event: "tempo",
+      data: {}
   }
+
 };

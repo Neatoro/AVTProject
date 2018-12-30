@@ -5,7 +5,7 @@
     </select>
     <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
     <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
-    <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
+    <Slider ref="bpm" title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
   </div>
 </template>
 
@@ -41,7 +41,9 @@ export default {
     },
     data: () => ({
         interval: undefined,
-        currentSelectedPreset: "None"
+        currentSelectedPreset: "None",
+        masterVolume: false,
+        tempo: false
     }),
     computed: mapState({
         isPlaying: state => state.isPlaying,
@@ -70,7 +72,10 @@ export default {
     },
     mounted: function () {
         this.$midi.eventBus.addEventListener("play", this.onPlayPause);
-        this.$midi.eventBus.addEventListener("mVolume", this.onMasterMidiVolumeChanged);
+        this.$midi.eventBus.addEventListener("masterKnob", this.onMasterMidiVolumeChanged);
+        this.$midi.eventBus.addEventListener("masterKnob", this.onMidiBPMChanged);
+        this.$midi.eventBus.addEventListener("mVolume", this.onMidiMasterVolume);
+        this.$midi.eventBus.addEventListener("tempo", this.onMidiTempo);
         window.addEventListener(
             "keyup",
             function (event) {
@@ -92,24 +97,53 @@ export default {
         onBPMChanged(bpm) {
             this.$store.commit(mutationTypes.SET_BPM, bpm);
         },
+        onMidiBPMChanged(bpm) {
+            if(this.tempo) {
+                switch (bpm.detail[1]) {
+                    case 1:
+                        if (this.bpm < 200)
+                            this.$refs.bpm.value++;
+                        break;
+                    case 127:
+                        if (this.bpm > 80)
+                            this.$refs.bpm.value--;
+                        break;
+                }
+            }
+        },
         onMasterVolumeChanged(volume) {
-
-
             this.$audio.gain.gain.value = volume / 100;
-
         },
         onMasterMidiVolumeChanged(volume) {
+            if(this.masterVolume) {
+                switch (volume.detail[1]) {
+                    case 1:
+                        if (this.$audio.gain.gain.value < 1)
+                            this.$audio.gain.gain.value = this.$audio.gain.gain.value + 0.01;
+                        break;
+                    case 127:
+                        if (this.$audio.gain.gain.value > 0)
+                            this.$audio.gain.gain.value = this.$audio.gain.gain.value - 0.01;
+                        break;
+                }
+                this.$refs.volume.value = Math.round(this.$audio.gain.gain.value * 100);
+            }
+        },
+        onMidiMasterVolume(volume) {
             switch (volume.detail[1]) {
-                case 1:
-                    if (this.$audio.gain.gain.value < 1)
-                        this.$audio.gain.gain.value = this.$audio.gain.gain.value + 0.01;
+                case 127: this.masterVolume = true;
+                break;
+                case 0: this.masterVolume = false;
+                break;
+            }
+        },
+        onMidiTempo(tempo){
+            switch (tempo.detail[1]) {
+                case 127: this.tempo = true;
                     break;
-                case 127:
-                    if (this.$audio.gain.gain.value > 0)
-                        this.$audio.gain.gain.value = this.$audio.gain.gain.value - 0.01;
+                case 0: this.tempo = false;
                     break;
             }
-            this.$refs.volume.value = Math.round(this.$audio.gain.gain.value * 100);
         }
     }
 }
