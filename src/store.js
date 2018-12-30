@@ -24,7 +24,8 @@ export const mutationTypes = {
   UPDATE_LBAND_OF_TRACK: "UPDATE_LBAND_OF_TRACK",
   UPDATE_MBAND_OF_TRACK: "UPDATE_MBAND_OF_TRACK",
   UPDATE_HBAND_OF_TRACK: "UPDATE_HBAND_OF_TRACK",
-  SELECT_TRACK: "SELECT_TRACK"
+  SELECT_TRACK: "SELECT_TRACK",
+  SET_MASTER_VOLUME: "SET_MASTER_VOLUME"
 };
 
 export const actionTypes = {
@@ -51,6 +52,7 @@ export default new Vuex.Store({
     selectedPreset: "None",
     presets,
     selectedTrack: 1,
+    masterVolume: 100,
     tracks: []
   },
   mutations: {

@@ -12,8 +12,8 @@ export default {
     title: String,
     min: Number,
     max: Number,
-      step: Number,
-      defaultValue: {
+    step: Number,
+    defaultValue: {
       type: Number,
       default: 0
     }

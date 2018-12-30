@@ -59,5 +59,10 @@ export default {
     keyCode: 104,
     event: "play",
     data: {}
+  },
+  MASTER_VOLUME: {
+    keyCode: 101,
+    event: "mVolume",
+    data: {}
   }
 };
