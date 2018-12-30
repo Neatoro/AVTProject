@@ -47,6 +47,7 @@ if (navigator.requestMIDIAccess) {
     midiAccess => {
       eventBus.addEventListener("track_changed", evt =>
         console.log(evt.detail)
+
       );
       Vue.prototype.$midi = {
         active: true,
