@@ -4,7 +4,7 @@
       <option v-for="presetName in presetNames" :key="presetName">{{ presetName }}</option>
     </select>
     <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
-    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
+    <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
     <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
   </div>
 </template>
@@ -35,67 +35,84 @@ function calcualteTiming(bpm) {
 }
 
 export default {
-  name: "Controller",
-  components: {
-    Slider
-  },
-  data: () => ({
-    interval: undefined,
-    currentSelectedPreset: "None"
-  }),
-  computed: mapState({
-    isPlaying: state => state.isPlaying,
-    bpm: state => state.bpm,
-    presetNames: state => _.map(state.presets, preset => preset.name)
-  }),
-  watch: {
-    isPlaying() {
-      if (this.isPlaying) {
-        start.bind(this)();
-      } else {
-        stop.bind(this)();
-      }
+    name: "Controller",
+    components: {
+        Slider
     },
-    currentSelectedPreset() {
-      this.$store.commit(
-        mutationTypes.SET_SELECTED_PRESET,
-        this.currentSelectedPreset
-      );
-    },
-    bpm() {
-      if (!_.isUndefined(this.interval)) {
-        this.interval.interval = calcualteTiming(this.bpm);
-      }
-    }
-  },
-  mounted: function() {
-      this.$midi.eventBus.addEventListener("play", this.onPlayPause);
-    window.addEventListener(
-      "keyup",
-      function(event) {
-        //space-key
-        if (event.keyCode === 32) {
-          this.onPlayPause(event);
+    data: () => ({
+        interval: undefined,
+        currentSelectedPreset: "None"
+    }),
+    computed: mapState({
+        isPlaying: state => state.isPlaying,
+        bpm: state => state.bpm,
+        presetNames: state => _.map(state.presets, preset => preset.name)
+    }),
+    watch: {
+        isPlaying() {
+            if (this.isPlaying) {
+                start.bind(this)();
+            } else {
+                stop.bind(this)();
+            }
+        },
+        currentSelectedPreset() {
+            this.$store.commit(
+                mutationTypes.SET_SELECTED_PRESET,
+                this.currentSelectedPreset
+            );
+        },
+        bpm() {
+            if (!_.isUndefined(this.interval)) {
+                this.interval.interval = calcualteTiming(this.bpm);
+            }
         }
-      }.bind(this)
-    );
-  },
-  methods: {
-    getPlayPauseLabel() {
-      return this.isPlaying ? "Pause" : "Play";
     },
-    onPlayPause(evt) {
-      evt.preventDefault();
-      this.$store.commit(mutationTypes.SET_IS_PLAYING, !this.isPlaying);
+    mounted: function () {
+        this.$midi.eventBus.addEventListener("play", this.onPlayPause);
+        this.$midi.eventBus.addEventListener("mVolume", this.onMasterMidiVolumeChanged);
+        window.addEventListener(
+            "keyup",
+            function (event) {
+                //space-key
+                if (event.keyCode === 32) {
+                    this.onPlayPause(event);
+                }
+            }.bind(this)
+        );
     },
-    onBPMChanged(bpm) {
-      this.$store.commit(mutationTypes.SET_BPM, bpm);
-    },
-    onMasterVolumeChanged(volume) {
-      this.$audio.gain.gain.value = volume / 100;
+    methods: {
+        getPlayPauseLabel() {
+            return this.isPlaying ? "Pause" : "Play";
+        },
+        onPlayPause(evt) {
+            evt.preventDefault();
+            this.$store.commit(mutationTypes.SET_IS_PLAYING, !this.isPlaying);
+        },
+        onBPMChanged(bpm) {
+            this.$store.commit(mutationTypes.SET_BPM, bpm);
+        },
+        onMasterVolumeChanged(volume) {
+
+
+            this.$audio.gain.gain.value = volume / 100;
+
+        },
+        onMasterMidiVolumeChanged(volume) {
+            switch (volume.detail[1]) {
+                case 1:
+                    if (this.$audio.gain.gain.value < 1)
+                        this.$audio.gain.gain.value = this.$audio.gain.gain.value + 0.01;
+                    break;
+                case 127:
+                    if (this.$audio.gain.gain.value > 0)
+                        this.$audio.gain.gain.value = this.$audio.gain.gain.value - 0.01;
+                    break;
+            }
+            this.$refs.volume.value = Math.round(this.$audio.gain.gain.value * 100);
+        }
     }
-  }
-};
+}
 </script>
 
 <style lang="scss">
