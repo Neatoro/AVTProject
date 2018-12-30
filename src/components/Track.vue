@@ -65,6 +65,7 @@ export default {
     isSelected(state) {
       return state.selectedTrack === this.id;
     },
+    masterButtonsPressed: state => state.masterButtonsPressed,
     sampleNames: state => _.map(state.samples, sample => sample.name),
     sample(state) {
       return _.find(
@@ -115,6 +116,11 @@ export default {
     });
   },
   mounted() {
+    this.$midi.eventBus.addEventListener(
+      "masterKnob",
+      this.onMidiVolumeChanged
+    );
+
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -260,6 +266,20 @@ export default {
     onSelectedTrack(evt) {
       evt.preventDefault();
       this.$store.commit(mutationTypes.SET_SELECTED_TRACK, this.id);
+    },
+    onMidiVolumeChanged(volume) {
+      if (this.selectedTrack === this.id && !this.masterButtonsPressed) {
+        switch (volume.detail[1]) {
+          case 1:
+            if (this.trackInformation.volume < 100)
+              this.$refs.volume.value = this.trackInformation.volume + 1;
+            break;
+          case 127:
+            if (this.trackInformation.volume > 0)
+              this.$refs.volume.value = this.trackInformation.volume - 1;
+            break;
+        }
+      }
     },
     resetValue({ mutation, value, propName }) {
       this.$store.commit(mutation, {
