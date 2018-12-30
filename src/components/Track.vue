@@ -3,7 +3,7 @@
     <select class="sample-select" v-model="selectedSample">
       <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
     </select>
-    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
+    <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
     <Slider
             ref="lowpass"
             title="Lowpass"
@@ -83,6 +83,8 @@ export default {
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
+      masterButtonsPressed: state => state.masterButtonsPressed,
+      selectedTrack: state => state.selectedTrack,
     sampleNames: state => _.map(state.samples, sample => sample.name),
     sample(state) {
       return _.find(
@@ -132,6 +134,8 @@ export default {
     });
   },
   mounted() {
+      this.$midi.eventBus.addEventListener("masterKnob", this.onMidiVolumeChanged);
+
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -250,6 +254,22 @@ export default {
         volume
       });
     },
+      onMidiVolumeChanged(volume) {
+          console.log(this.masterButtonsPressed);
+        if(this.selectedTrack === this.id && !this.masterButtonsPressed) {
+            switch (volume.detail[1]) {
+                case 1:
+                    if (this.trackInformation.volume < 100)
+                    this.$refs.volume.value = this.trackInformation.volume + 1;
+                    break;
+                case 127:
+                    if (this.trackInformation.volume > 0)
+                        this.$refs.volume.value = this.trackInformation.volume - 1;
+                    break;
+            }
+
+        }
+      },
     onLowpassValueChanged(lowpass) {
       this.$store.commit(mutationTypes.UPDATE_LOWPASS_OF_TRACK, {
         trackId: this.id,

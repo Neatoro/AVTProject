@@ -42,12 +42,12 @@ export default {
     data: () => ({
         interval: undefined,
         currentSelectedPreset: "None",
-        masterVolume: false,
-        tempo: false
     }),
     computed: mapState({
         isPlaying: state => state.isPlaying,
         bpm: state => state.bpm,
+        masterVolumeIsPressed: state => state.masterVolumeIsPressed,
+        masterTempoIsPressed: state => state.masterTempoIsPressed,
         presetNames: state => _.map(state.presets, preset => preset.name)
     }),
     watch: {
@@ -99,7 +99,7 @@ export default {
             this.$store.commit(mutationTypes.SET_BPM, bpm);
         },
         onMidiBPMChanged(bpm) {
-            if(this.tempo) {
+            if(this.masterTempoIsPressed) {
                 switch (bpm.detail[1]) {
                     case 1:
                         if (this.bpm < 200)
@@ -116,7 +116,7 @@ export default {
             this.$audio.gain.gain.value = volume / 100;
         },
         onMasterMidiVolumeChanged(volume) {
-            if(this.masterVolume) {
+            if(this.masterVolumeIsPressed) {
                 switch (volume.detail[1]) {
                     case 1:
                         if (this.$audio.gain.gain.value < 1)
@@ -132,24 +132,29 @@ export default {
         },
         onMidiMasterVolume(volume) {
             switch (volume.detail[1]) {
-                case 127: this.masterVolume = true;
+                case 127:
+                    this.$store.commit(mutationTypes.MIDI_MASTER_VOLUME_PRESSED,
+                        true);
                 break;
-                case 0: this.masterVolume = false;
+                case 0: this.$store.commit(mutationTypes.MIDI_MASTER_VOLUME_PRESSED,
+                    false);
                 break;
             }
         },
         onMidiTempo(tempo){
             switch (tempo.detail[1]) {
-                case 127: this.tempo = true;
+                case 127: this.$store.commit(mutationTypes.MIDI_TEMPO_PRESSED,
+                    true);
                     break;
-                case 0: this.tempo = false;
+                case 0: this.$store.commit(mutationTypes.MIDI_TEMPO_PRESSED,
+                    false);
                     break;
             }
         },
         onTrackChanged(track) {
             this.$store.commit(
                 mutationTypes.SELECT_TRACK,
-                track.detail[0]
+                track.detail[0].trackId
             );
         }
     }
