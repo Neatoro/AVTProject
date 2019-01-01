@@ -128,6 +128,13 @@ export default {
       "trackHighpass",
       this.onMidiHighpassChanged
     );
+    this.$midi.eventBus.addEventListener("trackLBand", this.onMidiLBandChanged);
+    this.$midi.eventBus.addEventListener("trackMBand", this.onMidiMBandChanged);
+    this.$midi.eventBus.addEventListener("trackHBand", this.onMidiHBandChanged);
+    this.$midi.eventBus.addEventListener(
+      "trackPanning",
+      this.onMidiPanningChanged
+    );
 
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
@@ -331,6 +338,62 @@ export default {
               this.$refs.highpass.value = this.trackInformation.highpass - 1;
             break;
         }
+      }
+    }
+  },
+  onMidiPanningChanged(panning) {
+    if (this.selectedTrack === this.id) {
+      switch (panning.detail[1]) {
+        case 1:
+          if (this.trackInformation.panning < 1)
+            this.$refs.panning.value = this.trackInformation.panning + 0.1;
+          break;
+        case 127:
+          if (this.trackInformation.panning > -1)
+            this.$refs.panning.value = this.trackInformation.panning - 0.1;
+          break;
+      }
+    }
+  },
+  onMidiLBandChanged(lBand) {
+    if (this.selectedTrack === this.id) {
+      switch (lBand.detail[1]) {
+        case 1:
+          if (this.trackInformation.lBand < 40)
+            this.$refs.lBand.value = this.trackInformation.lBand + 1;
+          break;
+        case 127:
+          if (this.trackInformation.lBand > -40)
+            this.$refs.lBand.value = this.trackInformation.lBand - 1;
+          break;
+      }
+    }
+  },
+  onMidiMBandChanged(mBand) {
+    if (this.selectedTrack === this.id) {
+      switch (mBand.detail[1]) {
+        case 1:
+          if (this.trackInformation.mBand < 40)
+            this.$refs.mBand.value = this.trackInformation.mBand + 1;
+          break;
+        case 127:
+          if (this.trackInformation.mBand > -40)
+            this.$refs.mBand.value = this.trackInformation.mBand - 1;
+          break;
+      }
+    }
+  },
+  onMidiHBandChanged(hBand) {
+    if (this.selectedTrack === this.id) {
+      switch (hBand.detail[1]) {
+        case 1:
+          if (this.trackInformation.hBand < 40)
+            this.$refs.hBand.value = this.trackInformation.hBand + 1;
+          break;
+        case 127:
+          if (this.trackInformation.hBand > -40)
+            this.$refs.hBand.value = this.trackInformation.hBand - 1;
+          break;
       }
     }
   },

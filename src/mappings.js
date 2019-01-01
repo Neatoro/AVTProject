@@ -86,6 +86,30 @@ export default {
         keyCode: 12345,
         event: "trackHighpass",
         data: {}
+    },
+    TRACK_L_BAND: {
+        //TODO: add correct keyCode @Eddie
+        keyCode: 12345,
+        event: "trackLBand",
+        data: {}
+    },
+    TRACK_M_BAND: {
+        //TODO: add correct keyCode @Eddie
+        keyCode: 12345,
+        event: "trackMBand",
+        data: {}
+    },
+    TRACK_H_BAND: {
+        //TODO: add correct keyCode @Eddie
+        keyCode: 12345,
+        event: "trackHBand",
+        data: {}
+    },
+    TRACK_PANNING: {
+        //TODO: add correct keyCode @Eddie
+        keyCode: 12345,
+        event: "trackPanning",
+        data: {}
     }
 
 };
