@@ -120,6 +120,14 @@ export default {
       "masterKnob",
       this.onMidiVolumeChanged
     );
+    this.$midi.eventBus.addEventListener(
+      "trackLowpass",
+      this.onMidiLowpassChanged
+    );
+    this.$midi.eventBus.addEventListener(
+      "trackHighpass",
+      this.onMidiHighpassChanged
+    );
 
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
@@ -254,6 +262,22 @@ export default {
     onMutedChanged(muted) {
       this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
         trackId: this.id,
+        onMidiHighpassChanged(highpass) {
+          if (this.selectedTrack === this.id) {
+            switch (highpass.detail[1]) {
+              case 1:
+                if (this.trackInformation.highpass < 18000)
+                  this.$refs.highpass.value =
+                    this.trackInformation.highpass + 1;
+                break;
+              case 127:
+                if (this.trackInformation.highpass > 0)
+                  this.$refs.highpass.value =
+                    this.trackInformation.highpass - 1;
+                break;
+            }
+          }
+        },
         muted
       });
     },
@@ -281,41 +305,69 @@ export default {
         }
       }
     },
-    resetValue({ mutation, value, propName }) {
-      this.$store.commit(mutation, {
-        trackId: this.id,
-        [propName]: value
-      });
-    },
-    play() {
-      const shouldPlay = this.trackInformation.stepData[this.currentColumn];
-      if (
-        shouldPlay &&
-        !_.isNil(this.sample) &&
-        !this.trackInformation.muted &&
-        (!this.isAnySongSolo || this.trackInformation.solo)
-      ) {
-        if (!_.isNil(this.source)) {
-          this.source.disconnect(this.lowpass);
+    onMidiLowpassChanged(lowpass) {
+      if (this.selectedTrack === this.id) {
+        switch (lowpass.detail[1]) {
+          case 1:
+            if (this.trackInformation.lowpass < 18000)
+              this.$refs.lowpass.value = this.trackInformation.lowpass + 1;
+            break;
+          case 127:
+            if (this.trackInformation.lowpass > 0)
+              this.$refs.lowpass.value = this.trackInformation.lowpass - 1;
+            break;
         }
-
-        this.source = this.$audio.audioContext.createBufferSource();
-        this.source.connect(this.lowpass);
-
-        audioBufferSlice(
-          this.sample.data(),
-          0,
-          60000 / (4 * this.bpm),
-          function(error, slicedBuffer) {
-            this.source.buffer = slicedBuffer;
-            this.source.loop = false;
-            this.source.start();
-            if (this.trackInformation.delay !== 0) {
-              setTimeout(this.source.start, this.trackInformation.delay * 1000);
-            }
-          }.bind(this)
-        );
       }
+    },
+    onMidiHighpassChanged(highpass) {
+      if (this.selectedTrack === this.id) {
+        switch (highpass.detail[1]) {
+          case 1:
+            if (this.trackInformation.highpass < 18000)
+              this.$refs.highpass.value = this.trackInformation.highpass + 1;
+            break;
+          case 127:
+            if (this.trackInformation.highpass > 0)
+              this.$refs.highpass.value = this.trackInformation.highpass - 1;
+            break;
+        }
+      }
+    }
+  },
+  resetValue({ mutation, value, propName }) {
+    this.$store.commit(mutation, {
+      trackId: this.id,
+      [propName]: value
+    });
+  },
+  play() {
+    const shouldPlay = this.trackInformation.stepData[this.currentColumn];
+    if (
+      shouldPlay &&
+      !_.isNil(this.sample) &&
+      !this.trackInformation.muted &&
+      (!this.isAnySongSolo || this.trackInformation.solo)
+    ) {
+      if (!_.isNil(this.source)) {
+        this.source.disconnect(this.lowpass);
+      }
+
+      this.source = this.$audio.audioContext.createBufferSource();
+      this.source.connect(this.lowpass);
+
+      audioBufferSlice(
+        this.sample.data(),
+        0,
+        60000 / (4 * this.bpm),
+        function(error, slicedBuffer) {
+          this.source.buffer = slicedBuffer;
+          this.source.loop = false;
+          this.source.start();
+          if (this.trackInformation.delay !== 0) {
+            setTimeout(this.source.start, this.trackInformation.delay * 1000);
+          }
+        }.bind(this)
+      );
     }
   }
 };
