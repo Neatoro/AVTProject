@@ -74,6 +74,18 @@ export default {
       keyCode: 3,
       event: "tempo",
       data: {}
-  }
+  },
+    TRACK_LOWPASS: {
+      //TODO: add correct keyCode @Eddie
+      keyCode: 12345,
+        event: "trackLowpass",
+        data: {}
+    },
+    TRACK_HIGHPASS: {
+        //TODO: add correct keyCode @Eddie
+        keyCode: 12345,
+        event: "trackHighpass",
+        data: {}
+    }
 
 };

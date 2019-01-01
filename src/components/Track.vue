@@ -135,6 +135,8 @@ export default {
   },
   mounted() {
       this.$midi.eventBus.addEventListener("masterKnob", this.onMidiVolumeChanged);
+      this.$midi.eventBus.addEventListener("trackLowpass", this.onMidiLowpassChanged);
+      this.$midi.eventBus.addEventListener("trackHighpass", this.onMidiHighpassChanged);
 
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
@@ -276,12 +278,40 @@ export default {
         lowpass
       });
     },
+      onMidiLowpassChanged(lowpass) {
+          if(this.selectedTrack === this.id)  {
+              switch (lowpass.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.lowpass < 18000)
+                          this.$refs.lowpass.value = this.trackInformation.lowpass + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.lowpass > 0)
+                          this.$refs.lowpass.value = this.trackInformation.lowpass - 1;
+                      break;
+              }
+          }
+      },
     onHighpassValueChanged(highpass) {
       this.$store.commit(mutationTypes.UPDATE_HIGHPASS_OF_TRACK, {
         trackId: this.id,
         highpass
       });
     },
+      onMidiHighpassChanged(highpass){
+          if(this.selectedTrack === this.id)  {
+              switch (highpass.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.highpass < 18000)
+                          this.$refs.highpass.value = this.trackInformation.highpass + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.highpass > 0)
+                          this.$refs.highpass.value = this.trackInformation.highpass - 1;
+                      break;
+              }
+          }
+      },
     onPanningValueChanged(panning) {
       this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
         trackId: this.id,
