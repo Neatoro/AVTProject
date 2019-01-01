@@ -1,5 +1,5 @@
 <template>
-  <canvas id="threeCanvas" ref="threeCanvas"></canvas>
+  <canvas class="viz" id="threeCanvas" ref="threeCanvas"></canvas>
 </template>
 
 <script>
@@ -95,8 +95,6 @@ export default {
 
 <style lang="scss">
 #threeCanvas {
-  width: 100vw;
-  height: 25vh;
   background-color: black;
 }
 </style>

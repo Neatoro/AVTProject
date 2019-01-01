@@ -1,35 +1,43 @@
 <template>
   <div class="effect-controller">
-    <Slider
-      title="Lowpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="18000"
-      @change="onLowpassValueChanged"
-    ></Slider>
-    <Slider
-      title="Highpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="0"
-      @change="onHighpassValueChanged"
-    ></Slider>
-      <input type="radio" id="lowpass" name="filter-radios" @click="onLowRadio">
-      <label for="lowpass">low</label>
-      <input type="radio" id="highpass" name="filter-radios" @click="onHighRadio">
-      <label for="highpass">high</label>
-      <input type="radio" id="off" name="filter-radios" checked @click="onFilterOffRadio">
-      <label for="off">off</label>
+    <KnobGroup title="Master Effects">
+      <Knob
+        label="Lowpass"
+        :min="0"
+        :max="18000"
+        :initialValue="18000"
+        :changeFactor="100"
+        @change="onLowpassValueChanged"
+      />
+      <Knob
+        label="Highpass"
+        :min="0"
+        :max="18000"
+        :initialValue="0"
+        :changeFactor="100"
+        @change="onHighpassValueChanged"
+      />
+    </KnobGroup>
+    <!-- <input type="radio" id="lowpass" name="filter-radios" @click="onLowRadio">
+    <label for="lowpass">low</label>
+    <input type="radio" id="highpass" name="filter-radios" @click="onHighRadio">
+    <label for="highpass">high</label>
+    <input type="radio" id="off" name="filter-radios" checked @click="onFilterOffRadio">
+    <label for="off">off</label>-->
   </div>
 </template>
 
 <script>
+import Knob from "@/components/common/Knob.vue";
+import KnobGroup from "@/components/common/KnobGroup.vue";
 import Slider from "@/components/Slider.vue";
 
 export default {
   name: "EffectController",
   components: {
-    Slider
+    Slider,
+    KnobGroup,
+    Knob
   },
   data: () => ({
     filterState: ""

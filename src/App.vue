@@ -6,4 +6,8 @@
 * {
   box-sizing: border-box;
 }
+
+body {
+  background-color: #202020;
+}
 </style>

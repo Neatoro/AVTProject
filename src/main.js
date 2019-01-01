@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueSelect from "vue-select";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
@@ -39,6 +40,8 @@ let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = { scene, camera, renderer };
+
+Vue.component("v-select", VueSelect);
 
 new Vue({
   router,
