@@ -31,9 +31,30 @@ export default {
 
 <style lang="scss">
 .sequencer {
-  height: 65vh;
-  max-height: 65vh;
+  background-color: #202020;
+  max-height: calc(100vh - 297px);
   overflow-y: scroll;
   padding: 8px;
+  position: relative;
+}
+
+.adder {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  background-color: #048ba8;
+  border: 2px solid #04728a;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  font-family: "Roboto Mono";
+  font-size: 1.8rem;
+  outline: none;
+
+  &:disabled {
+    display: none;
+  }
 }
 </style>

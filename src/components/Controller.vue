@@ -1,11 +1,19 @@
 <template>
   <div class="controller">
-    <select v-model="currentSelectedPreset">
+    <KnobGroup title="Master">
+      <Knob
+        label="Volume"
+        :min="0"
+        :max="100"
+        :initialValue="100"
+        :changeFactor="0.8"
+        @change="onMasterVolumeChanged"
+      />
+      <Knob label="BPM" :min="80" :max="220" :initialValue="80" @change="onBPMChanged"/>
+    </KnobGroup>
+    <!-- <select v-model="currentSelectedPreset">
       <option v-for="presetName in presetNames" :key="presetName">{{ presetName }}</option>
-    </select>
-    <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
-    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
-    <Slider title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
+    </select>-->
   </div>
 </template>
 
@@ -14,6 +22,8 @@ import _ from "lodash";
 import { mapState } from "vuex";
 import { actionTypes, mutationTypes } from "@/store";
 import Interval from "@/utils/editableInterval";
+import Knob from "@/components/common/Knob.vue";
+import KnobGroup from "@/components/common/KnobGroup.vue";
 import Slider from "@/components/Slider.vue";
 
 function tick() {
@@ -37,7 +47,9 @@ function calcualteTiming(bpm) {
 export default {
   name: "Controller",
   components: {
-    Slider
+    Slider,
+    Knob,
+    KnobGroup
   },
   data: () => ({
     interval: undefined,

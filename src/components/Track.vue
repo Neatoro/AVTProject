@@ -1,25 +1,12 @@
 <template>
-  <div class="track">
-    <select class="sample-select" v-model="selectedSample">
-      <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
-    </select>
-    <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
-    <Slider
-      title="Lowpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="18000"
-      @change="onLowpassValueChanged"
-    ></Slider>
-    <Slider
-      title="Highpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="0"
-      @change="onHighpassValueChanged"
-    ></Slider>
-    <input type="checkbox" class="checkbox" @change="onMutedChanged">
-    <input type="checkbox" class="checkbox" @change="onSoloChanged">
+  <div class="track" :class="{'track--selected': isSelected}">
+    <button class="btn--select" @click="onSelectedTrack">Select</button>
+    <v-select
+      :searchable="false"
+      v-model="selectedSample"
+      class="avt__dropdown"
+      :options="sampleNames"
+    />
     <Step
       ref="steps"
       v-for="n in 16"
@@ -55,13 +42,15 @@ export default {
   },
   data: () => ({
     selectedSample: null,
-    source: null,
     lowpass: null,
     highpass: null,
     gain: null,
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
+    isSelected(state) {
+      return state.selectedTrack === this.id;
+    },
     sampleNames: state => _.map(state.samples, sample => sample.name),
     sample(state) {
       return _.find(
@@ -130,9 +119,7 @@ export default {
     });
   },
   watch: {
-    currentColumn() {
-      this.play();
-    },
+    currentColumn: "play",
     presetName() {
       const presetStepData = _.clone(
         _.get(this.currentPresetForTrack, "steps")
@@ -164,35 +151,9 @@ export default {
     }
   },
   methods: {
-    onMutedChanged(evt) {
-      this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
-        trackId: this.id,
-        muted: evt.target.checked
-      });
-    },
-    onSoloChanged(evt) {
-      this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
-        trackId: this.id,
-        solo: evt.target.checked
-      });
-    },
-    onVolumeChange(volume) {
-      this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
-        trackId: this.id,
-        volume
-      });
-    },
-    onLowpassValueChanged(lowpass) {
-      this.$store.commit(mutationTypes.UPDATE_LOWPASS_OF_TRACK, {
-        trackId: this.id,
-        lowpass
-      });
-    },
-    onHighpassValueChanged(highpass) {
-      this.$store.commit(mutationTypes.UPDATE_HIGHPASS_OF_TRACK, {
-        trackId: this.id,
-        highpass
-      });
+    onSelectedTrack(evt) {
+      evt.preventDefault();
+      this.$store.commit(mutationTypes.SET_SELECTED_TRACK, this.id);
     },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
@@ -202,17 +163,17 @@ export default {
         !this.trackInformation.muted &&
         (!this.isAnySongSolo || this.trackInformation.solo)
       ) {
-        this.source = this.$audio.audioContext.createBufferSource();
-        this.source.connect(this.lowpass);
+        const source = this.$audio.audioContext.createBufferSource();
+        source.connect(this.lowpass);
         audioBufferSlice(
           this.sample.data(),
           0,
           60000 / (4 * this.bpm),
-          function(error, slicedBuffer) {
-            this.source.buffer = slicedBuffer;
-            this.source.loop = false;
-            this.source.start();
-          }.bind(this)
+          (error, slicedBuffer) => {
+            source.buffer = slicedBuffer;
+            source.loop = false;
+            source.start();
+          }
         );
       }
     }
@@ -223,16 +184,59 @@ export default {
 <style lang="scss">
 .track {
   width: 100%;
-  height: 10vh;
+  height: 5vh;
   display: flex;
+  align-items: center;
+
+  &--selected {
+    height: 12vh;
+
+    .btn--select {
+      display: none;
+    }
+  }
 
   .step {
     flex: 1 0 auto;
   }
 }
 
-.sample-select {
-  align-self: flex-start;
+.btn--select {
   outline: none;
+  background-color: #048ba8;
+  border: 2px solid #04728a;
+  color: #fff;
+  font-family: "Roboto Mono";
+  font-size: 0.8rem;
+  margin-right: 4px;
+}
+
+.avt__dropdown {
+  max-width: 10vw;
+  width: 10vw;
+  font-family: "Roboto Mono";
+  font-size: 0.8rem;
+  margin-right: 16px;
+
+  .dropdown-toggle {
+    border-color: #fff;
+  }
+
+  .open-indicator:before {
+    border-color: #fff;
+  }
+
+  .vs__selected-options {
+    flex-wrap: unset;
+    overflow: hidden;
+  }
+
+  .selected-tag {
+    color: #fff;
+  }
+
+  .clear {
+    display: none;
+  }
 }
 </style>

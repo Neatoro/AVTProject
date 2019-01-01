@@ -19,7 +19,8 @@ export const mutationTypes = {
   UPDATE_LOWPASS_OF_TRACK: "UPDATE_LOWPASS_OF_TRACK",
   UPDATE_HIGHPASS_OF_TRACK: "UPDATE_HIGHPASS_OF_TRACK",
   UPDATE_ANALYSER_OF_TRACK: "UPDATE_ANALYSER_OF_TRACK",
-  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK"
+  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK",
+  SET_SELECTED_TRACK: "SET_SELECTED_TRACK"
 };
 
 export const actionTypes = {
@@ -45,7 +46,8 @@ export default new Vuex.Store({
     currentColumn: 0,
     selectedPreset: "None",
     presets,
-    tracks: []
+    tracks: [],
+    selectedTrack: -1
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {
@@ -127,6 +129,9 @@ export default new Vuex.Store({
         value: solo,
         key: "solo"
       });
+    },
+    [mutationTypes.SET_SELECTED_TRACK](state, trackId) {
+      Vue.set(state, "selectedTrack", trackId);
     }
   },
   actions: {
