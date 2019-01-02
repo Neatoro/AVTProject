@@ -20,6 +20,7 @@
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
+      <Slider title="Delay" :min="0" :max="5" :defaultValue="0" :step="0.1" @change="onDelayTimeValueChange"></Slider>
       <Slider
               ref="panning"
               title="Panning"
@@ -76,6 +77,7 @@ export default {
     lowpass: null,
     highpass: null,
     gain: null,
+    delay: null,
     panning: null,
     lBand: null,
     mBand: null,
@@ -139,6 +141,7 @@ export default {
     this.highpass = this.$audio.audioContext.createBiquadFilter();
     this.highpass.type = "highpass";
     this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
+    this.delay = this.$audio.audioContext.createDelay(5);
     this.panning = this.$audio.audioContext.createStereoPanner();
     this.panning.pan.value = INITIAL_PANNING_VALUE;
     this.lBand = this.$audio.audioContext.createBiquadFilter();
@@ -153,6 +156,7 @@ export default {
     this.hBand.type = "lowshelf";
     this.hBand.frequency.value = 13060;
     this.hBand.gain.value = INITIAL_EQ_GAIN;
+
     const analyser = this.$audio.audioContext.createAnalyser();
 
     this.lowpass
@@ -163,6 +167,7 @@ export default {
       .connect(this.hBand)
       .connect(this.gain)
       .connect(this.$audio.connector);
+    this.gain.connect(this.delay).connect(this.$audio.connector);
 
     this.gain.connect(analyser);
 
@@ -262,6 +267,11 @@ export default {
         highpass
       });
     },
+    onDelayTimeValueChange(delay) {
+      this.delay.delayTime.setValueAtTime(
+        delay,
+        this.$audio.audioContext.currentTime
+      );
     onPanningValueChanged(panning) {
       this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
         trackId: this.id,
@@ -304,6 +314,7 @@ export default {
             this.source.buffer = slicedBuffer;
             this.source.loop = false;
             this.source.start();
+            setTimeout(this.source.start, this.trackInformation.delay*1000);
           }.bind(this)
         );
       }
