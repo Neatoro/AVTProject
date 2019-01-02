@@ -10,7 +10,8 @@ import _ from "lodash";
 export default {
   name: "Visualization",
   data: () => ({
-    mesh: []
+    mesh: [],
+    array: Uint8Array
   }),
   computed: mapState({
     trackCount: state => state.trackCount,
@@ -55,9 +56,16 @@ export default {
       this.mesh[i].position.z = -100;
     },
     render() {
-      // _.forEach(this.tracks, function(track) {
-      //   track.analyser()
-      // }.bind(this));
+
+      _.forEach(
+        this.tracks,
+        function(track) {
+            let analyser  = track.analyser();
+            const dataArray = new Uint8Array(analyser.fftSize);
+          analyser.getByteFrequencyData(dataArray);
+          console.log(dataArray);
+        }.bind(this)
+      );
 
       this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
       /*this.wireframe.color = new THREE.Color(

@@ -111,12 +111,12 @@ export default new Vuex.Store({
     },
     [mutationTypes.UPDATE_ANALYSER_OF_TRACK](
       state,
-      { trackId, analyserFunction }
+      { trackId, analyser }
     ) {
       privateMethods.updateTrackData({
         state,
         trackId,
-        value: analyserFunction,
+        value: analyser,
         key: "analyser"
       });
     },

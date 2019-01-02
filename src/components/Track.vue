@@ -126,7 +126,7 @@ export default {
 
     this.$store.commit(mutationTypes.UPDATE_ANALYSER_OF_TRACK, {
       trackId: this.id,
-      analyserFunction: () => analyser
+      analyser: () => analyser
     });
   },
   watch: {
