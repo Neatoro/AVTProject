@@ -5,21 +5,36 @@
     </select>
     <Slider title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
     <Slider
-      title="Lowpass"
+            ref="lowpass"
+            title="Lowpass"
       :min="0"
       :max="18000"
       :defaultValue="18000"
       @change="onLowpassValueChanged"
     ></Slider>
     <Slider
-      title="Highpass"
+            ref="highpass"
+            title="Highpass"
       :min="0"
       :max="18000"
       :defaultValue="0"
       @change="onHighpassValueChanged"
     ></Slider>
       <Slider title="Delay" :min="0" :max="5" :defaultValue="0" :step="0.1" @change="onDelayTimeValueChange"></Slider>
-      <input type="checkbox" class="checkbox" @change="onMutedChanged">
+      <Slider
+              ref="panning"
+              title="Panning"
+              :min="-1"
+              :max="1"
+              :step="0.1"
+              :defaultValue="0"
+              @change="onPanningValueChanged"
+      ></Slider>
+      <Slider ref="lBand" title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandValueChanged"></Slider>
+      <Slider ref="mBand" title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandValueChanged"></Slider>
+      <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider>
+
+    <input type="checkbox" class="checkbox" @change="onMutedChanged">
     <input type="checkbox" class="checkbox" @change="onSoloChanged">
     <Step
       ref="steps"
@@ -41,6 +56,8 @@ import Step from "@/components/Step.vue";
 
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
+const INITIAL_PANNING_VALUE = 0;
+const INITIAL_EQ_GAIN = 0;
 
 export default {
   name: "Track",
@@ -61,6 +78,10 @@ export default {
     highpass: null,
     gain: null,
     delay: null,
+    panning: null,
+    lBand: null,
+    mBand: null,
+    hBand: null,
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
@@ -103,6 +124,10 @@ export default {
       selectedSample: "",
       lowpass: INITIAL_LOWPASS_VALUE,
       highpass: INITIAL_HIGHPASS_VALUE,
+      panning: INITIAL_PANNING_VALUE,
+      lBand: INITIAL_EQ_GAIN,
+      mBand: INITIAL_EQ_GAIN,
+      hBand: INITIAL_EQ_GAIN,
       stepData: this.stepData,
       volume: 100,
       analyser: null
@@ -117,11 +142,29 @@ export default {
     this.highpass.type = "highpass";
     this.highpass.frequency.value = INITIAL_HIGHPASS_VALUE;
     this.delay = this.$audio.audioContext.createDelay(5);
+    this.panning = this.$audio.audioContext.createStereoPanner();
+    this.panning.pan.value = INITIAL_PANNING_VALUE;
+    this.lBand = this.$audio.audioContext.createBiquadFilter();
+    this.lBand.type = "lowshelf";
+    this.lBand.frequency.value = 360;
+    this.lBand.gain.value = INITIAL_EQ_GAIN;
+    this.mBand = this.$audio.audioContext.createBiquadFilter();
+    this.mBand.type = "peaking";
+    this.mBand.frequency.value = 3600;
+    this.mBand.gain.value = INITIAL_EQ_GAIN;
+    this.hBand = this.$audio.audioContext.createBiquadFilter();
+    this.hBand.type = "lowshelf";
+    this.hBand.frequency.value = 13060;
+    this.hBand.gain.value = INITIAL_EQ_GAIN;
 
     const analyser = this.$audio.audioContext.createAnalyser();
 
     this.lowpass
       .connect(this.highpass)
+      .connect(this.panning)
+      .connect(this.lBand)
+      .connect(this.mBand)
+      .connect(this.hBand)
       .connect(this.gain)
       .connect(this.$audio.connector);
     this.gain.connect(this.delay).connect(this.$audio.connector);
@@ -134,6 +177,20 @@ export default {
     });
   },
   watch: {
+    selectedSample() {
+      this.onLowpassValueChanged(INITIAL_LOWPASS_VALUE);
+      this.$refs.lowpass.value = INITIAL_LOWPASS_VALUE;
+      this.onHighpassValueChanged(INITIAL_HIGHPASS_VALUE);
+      this.$refs.highpass.value = INITIAL_HIGHPASS_VALUE;
+      this.onPanningValueChanged(INITIAL_PANNING_VALUE);
+      this.$refs.panning.value = INITIAL_PANNING_VALUE;
+      this.onLBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.lBand.value = INITIAL_EQ_GAIN;
+      this.onMBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.mBand.value = INITIAL_EQ_GAIN;
+      this.onHBandValueChanged(INITIAL_EQ_GAIN);
+      this.$refs.hBand.value = INITIAL_EQ_GAIN;
+    },
     currentColumn() {
       this.play();
     },
@@ -163,8 +220,20 @@ export default {
         this.$audio.audioContext.currentTime
       );
     },
+    ["trackInformation.panning"]() {
+      this.panning.pan.value = this.trackInformation.panning;
+    },
     ["trackInformation.volume"]() {
       this.gain.gain.value = this.trackInformation.volume / 100;
+    },
+    ["trackInformation.lBand"]() {
+      this.lBand.gain.value = this.trackInformation.lBand;
+    },
+    ["trackInformation.mBand"]() {
+      this.mBand.gain.value = this.trackInformation.mBand;
+    },
+    ["trackInformation.hBand"]() {
+      this.hBand.gain.value = this.trackInformation.hBand;
     }
   },
   methods: {
@@ -203,6 +272,29 @@ export default {
         delay,
         this.$audio.audioContext.currentTime
       );
+    onPanningValueChanged(panning) {
+      this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
+        trackId: this.id,
+        panning
+      });
+    },
+    onLBandValueChanged(lBand) {
+      this.$store.commit(mutationTypes.UPDATE_LBAND_OF_TRACK, {
+        trackId: this.id,
+        lBand
+      });
+    },
+    onMBandValueChanged(mBand) {
+      this.$store.commit(mutationTypes.UPDATE_MBAND_OF_TRACK, {
+        trackId: this.id,
+        mBand
+      });
+    },
+    onHBandValueChanged(hBand) {
+      this.$store.commit(mutationTypes.UPDATE_HBAND_OF_TRACK, {
+        trackId: this.id,
+        hBand
+      });
     },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];

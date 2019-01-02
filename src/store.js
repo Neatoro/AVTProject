@@ -19,7 +19,11 @@ export const mutationTypes = {
   UPDATE_LOWPASS_OF_TRACK: "UPDATE_LOWPASS_OF_TRACK",
   UPDATE_HIGHPASS_OF_TRACK: "UPDATE_HIGHPASS_OF_TRACK",
   UPDATE_ANALYSER_OF_TRACK: "UPDATE_ANALYSER_OF_TRACK",
-  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK"
+  UPDATE_SOLO_OF_TRACK: "UPDATE_SOLO_OF_TRACK",
+  UPDATE_PANNING_OF_TRACK: "UPDATE_PANNING_OF_TRACK",
+  UPDATE_LBAND_OF_TRACK: "UPDATE_LBAND_OF_TRACK",
+  UPDATE_MBAND_OF_TRACK: "UPDATE_MBAND_OF_TRACK",
+  UPDATE_HBAND_OF_TRACK: "UPDATE_HBAND_OF_TRACK"
 };
 
 export const actionTypes = {
@@ -126,6 +130,38 @@ export default new Vuex.Store({
         trackId,
         value: solo,
         key: "solo"
+      });
+    },
+    [mutationTypes.UPDATE_PANNING_OF_TRACK](state, { trackId, panning }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: panning,
+        key: "panning"
+      });
+    },
+    [mutationTypes.UPDATE_LBAND_OF_TRACK](state, { trackId, lBand }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: lBand,
+        key: "lBand"
+      });
+    },
+    [mutationTypes.UPDATE_MBAND_OF_TRACK](state, { trackId, mBand }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: mBand,
+        key: "mBand"
+      });
+    },
+    [mutationTypes.UPDATE_HBAND_OF_TRACK](state, { trackId, hBand }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: hBand,
+        key: "hBand"
       });
     }
   },
