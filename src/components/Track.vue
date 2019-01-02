@@ -268,10 +268,11 @@ export default {
       });
     },
     onDelayTimeValueChange(delay) {
-      this.delay.delayTime.setValueAtTime(
-        delay,
-        this.$audio.audioContext.currentTime
-      );
+        this.delay.delayTime.setValueAtTime(
+            delay,
+            this.$audio.audioContext.currentTime
+        );
+    },
     onPanningValueChanged(panning) {
       this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
         trackId: this.id,
