@@ -222,6 +222,7 @@ export default {
             this.source.buffer = slicedBuffer;
             this.source.loop = false;
             this.source.start();
+            setTimeout(this.source.start, this.trackInformation.delay*1000);
           }.bind(this)
         );
       }
