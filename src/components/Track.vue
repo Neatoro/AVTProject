@@ -13,8 +13,8 @@
         <Slider ref="lBand" title="lBand" :min="-40" :max="40" :defaultValue="0" @change="onLBandValueChanged"></Slider>
         <Slider ref="mBand" title="mBand" :min="-40" :max="40" :defaultValue="0" @change="onMBandValueChanged"></Slider>
         <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider>
-        <input type="checkbox" class="checkbox" @change="onMutedChanged" title="check muted">
-        <input type="checkbox" class="checkbox" @change="onSoloChanged" title="check solo">
+        <input ref="mute" type="checkbox" class="checkbox" @change="onMutedChanged" title="check muted">
+        <input ref="solo" type="checkbox" class="checkbox" @change="onSoloChanged" title="check solo">
         <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"
               v-model="stepData[n - 1]"></Step>
     </div>
@@ -134,7 +134,8 @@ export default {
       );
     }
 
-    this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
+    this.$midi.eventBus.addEventListener("solo", this.onMidiSoloChanged);
+    this.$midi.eventBus.addEventListener("mute", this.onMidiMutedChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -245,11 +246,21 @@ export default {
         muted: evt.target.checked
       });
     },
+    onMidiMutedChanged() {
+      if (this.selectedTrack === this.id) {
+        this.$refs.mute.checked = !this.$refs.mute.checked;
+      }
+    },
     onSoloChanged(evt) {
       this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
         trackId: this.id,
         solo: evt.target.checked
       });
+    },
+    onMidiSoloChanged() {
+      if (this.selectedTrack === this.id) {
+        this.$refs.solo.checked = !this.$refs.solo.checked;
+      }
     },
     onVolumeChange(volume) {
       this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
