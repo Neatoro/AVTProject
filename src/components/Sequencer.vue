@@ -18,6 +18,9 @@ export default {
   computed: mapState({
     trackCount: state => state.trackCount
   }),
+  mounted: function() {
+    this.$midi.eventBus.addEventListener("addTrack", this.onAddTrack);
+  },
   methods: {
     onAddTrack(evt) {
       evt.preventDefault();
