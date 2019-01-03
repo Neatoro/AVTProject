@@ -109,10 +109,14 @@ export default {
     });
   },
   mounted() {
-    this.$midi.eventBus.addEventListener(
-      "masterKnob",
-      this.onMidiVolumeChanged
-    );
+      this.$midi.eventBus.addEventListener("masterKnob", this.onMidiVolumeChanged);
+      this.$midi.eventBus.addEventListener("trackLowpass", this.onMidiLowpassChanged);
+      this.$midi.eventBus.addEventListener("trackHighpass", this.onMidiHighpassChanged);
+      this.$midi.eventBus.addEventListener("trackLBand", this.onMidiLBandChanged);
+      this.$midi.eventBus.addEventListener("trackMBand", this.onMidiMBandChanged);
+      this.$midi.eventBus.addEventListener("trackHBand", this.onMidiHBandChanged);
+      this.$midi.eventBus.addEventListener("trackPanning", this.onMidiPanningChanged);
+
     this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
@@ -249,36 +253,120 @@ export default {
         lowpass
       });
     },
+      onMidiLowpassChanged(lowpass) {
+          if(this.selectedTrack === this.id)  {
+              switch (lowpass.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.lowpass < 18000)
+                          this.$refs.lowpass.value = this.trackInformation.lowpass + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.lowpass > 0)
+                          this.$refs.lowpass.value = this.trackInformation.lowpass - 1;
+                      break;
+              }
+          }
+      },
     onHighpassValueChanged(highpass) {
       this.$store.commit(mutationTypes.UPDATE_HIGHPASS_OF_TRACK, {
         trackId: this.id,
         highpass
       });
     },
+      onMidiHighpassChanged(highpass){
+          if(this.selectedTrack === this.id)  {
+              switch (highpass.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.highpass < 18000)
+                          this.$refs.highpass.value = this.trackInformation.highpass + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.highpass > 0)
+                          this.$refs.highpass.value = this.trackInformation.highpass - 1;
+                      break;
+              }
+          }
+      },
     onPanningValueChanged(panning) {
       this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
         trackId: this.id,
         panning
       });
     },
+      onMidiPanningChanged (panning) {
+          if(this.selectedTrack === this.id)  {
+              switch (panning.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.panning < 1)
+                          this.$refs.panning.value = this.trackInformation.panning + 0.1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.panning > -1)
+                          this.$refs.panning.value = this.trackInformation.panning - 0.1;
+                      break;
+              }
+          }
+      },
     onLBandValueChanged(lBand) {
       this.$store.commit(mutationTypes.UPDATE_LBAND_OF_TRACK, {
         trackId: this.id,
         lBand
       });
     },
+      onMidiLBandChanged(lBand) {
+          if(this.selectedTrack === this.id)  {
+              switch (lBand.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.lBand < 40)
+                          this.$refs.lBand.value = this.trackInformation.lBand + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.lBand > -40)
+                          this.$refs.lBand.value = this.trackInformation.lBand - 1;
+                      break;
+              }
+          }
+      },
     onMBandValueChanged(mBand) {
       this.$store.commit(mutationTypes.UPDATE_MBAND_OF_TRACK, {
         trackId: this.id,
         mBand
       });
     },
+      onMidiMBandChanged(mBand) {
+          if(this.selectedTrack === this.id)  {
+              switch (mBand.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.mBand < 40)
+                          this.$refs.mBand.value = this.trackInformation.mBand + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.mBand > -40)
+                          this.$refs.mBand.value = this.trackInformation.mBand - 1;
+                      break;
+              }
+          }
+      },
     onHBandValueChanged(hBand) {
       this.$store.commit(mutationTypes.UPDATE_HBAND_OF_TRACK, {
         trackId: this.id,
         hBand
       });
     },
+      onMidiHBandChanged(hBand) {
+          if(this.selectedTrack === this.id)  {
+              switch (hBand.detail[1]) {
+                  case 1:
+                      if (this.trackInformation.hBand < 40)
+                          this.$refs.hBand.value = this.trackInformation.hBand + 1;
+                      break;
+                  case 127:
+                      if (this.trackInformation.hBand > -40)
+                          this.$refs.hBand.value = this.trackInformation.hBand - 1;
+                      break;
+              }
+          }
+      },
     play() {
       const shouldPlay = this.trackInformation.stepData[this.currentColumn];
       if (

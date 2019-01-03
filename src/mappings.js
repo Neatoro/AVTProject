@@ -71,7 +71,7 @@ export default {
     data: {}
   },
   TEMPO: {
-    keyCode: 3,
+       keyCode: 3,
     event: "tempo",
     data: {}
   },
@@ -80,41 +80,43 @@ export default {
     event: "solo",
     data: {}
   },
+   
   MUTE: {
     keyCode: 118,
     event: "mute",
     data: {}
   },
-  EFFECT_KNOB_1: {
+    TRACK_LOWPASS: {
     keyCode: 22,
-    event: "effectKnob1",
-    data: {}
-  },
-  EFFECT_KNOB_2: {
+        event: "trackLowpass",
+        data: {}
+    },
+    TRACK_HIGHPASS: {
     keyCode: 23,
-    event: "effectKnob2",
-    data: {}
-  },
-  EFFECT_KNOB_3: {
+        event: "trackHighpass",
+        data: {}
+    },
+    TRACK_PANNING: {
     keyCode: 24,
-    event: "effectKnob3",
-    data: {}
-  },
-  EFFECT_KNOB_4: {
+        event: "trackPanning",
+        data: {}
+    },
+    
+    TRACK_L_BAND: {
     keyCode: 25,
-    event: "effectKnob4",
-    data: {}
-  },
-  EFFECT_KNOB_5: {
+        event: "trackLBand",
+        data: {}
+    },
+    TRACK_M_BAND: {
     keyCode: 26,
-    event: "effectKnob5",
-    data: {}
-  },
-  EFFECT_KNOB_6: {
+        event: "trackMBand",
+        data: {}
+    },
+    TRACK_H_BAND: {
     keyCode: 27,
-    event: "effectKnob6",
-    data: {}
-  },
+        event: "trackHBand",
+        data: {}
+    },
   EFFECT_KNOB_7: {
     keyCode: 27,
     event: "effectKnob4",
