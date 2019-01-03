@@ -127,6 +127,12 @@ export default {
       "trackPanning",
       this.onMidiPanningChanged
     );
+    for (let i = 0; i < 16; i++) {
+      this.$midi.eventBus.addEventListener(
+        "step_" + (i + 1),
+        this.onMidiStepsChanged
+      );
+    }
 
     this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
     this.gain = this.$audio.audioContext.createGain();
@@ -226,6 +232,13 @@ export default {
     }
   },
   methods: {
+    onMidiStepsChanged(step) {
+      const stepId = step.detail[0].stepId;
+      if (this.selectedTrack === this.id) {
+        this.$refs.steps[stepId - 1].value = !this.$refs.steps[stepId - 1]
+          .isActive;
+      }
+    },
     onMutedChanged(evt) {
       this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
         trackId: this.id,

@@ -129,81 +129,113 @@ export default {
   STEP_1: {
     keyCode: 24,
     event: "step_1",
-    data: {}
+    data: {
+        stepId: 1
+    }
   },
   STEP_2: {
     keyCode: 25,
     event: "step_2",
-    data: {}
+    data: {
+        stepId: 2
+    }
   },
   STEP_3: {
     keyCode: 26,
     event: "step_3",
-    data: {}
+    data: {
+        stepId: 3
+    }
   },
   STEP_4: {
     keyCode: 27,
     event: "step_4",
-    data: {}
+    data: {
+        stepId: 4
+    }
   },
   STEP_5: {
     keyCode: 20,
     event: "step_5",
-    data: {}
+    data: {
+        stepId: 5
+    }
   },
   STEP_6: {
     keyCode: 21,
     event: "step_6",
-    data: {}
+    data: {
+        stepId: 6
+    }
   },
   STEP_7: {
     keyCode: 22,
     event: "step_7",
-    data: {}
+    data: {
+        stepId: 7
+    }
   },
   STEP_8: {
     keyCode: 23,
     event: "step_8",
-    data: {}
+    data: {
+        stepId: 8
+    }
   },
   STEP_9: {
     keyCode: 16,
     event: "step_9",
-    data: {}
+    data: {
+        stepId: 9
+    }
   },
   STEP_10: {
     keyCode: 17,
     event: "step_10",
-    data: {}
+    data: {
+        stepId: 10
+    }
   },
   STEP_11: {
     keyCode: 18,
     event: "step_11",
-    data: {}
+    data: {
+        stepId: 11
+    }
   },
   STEP_12: {
     keyCode: 19,
     event: "step_12",
-    data: {}
+    data: {
+        stepId: 12
+    }
   },
   STEP_13: {
     keyCode: 12,
     event: "step_13",
-    data: {}
+    data: {
+        stepId: 13
+    }
   },
   STEP_14: {
     keyCode: 13,
     event: "step_14",
-    data: {}
+    data: {
+        stepId: 14
+    }
   },
   STEP_15: {
     keyCode: 14,
     event: "step_15",
-    data: {}
+    data: {
+        stepId: 15
+    }
   },
   STEP_16: {
     keyCode: 15,
     event: "step_16",
-    data: {}
+    data: {
+        stepId: 16
+    }
   }
 };
