@@ -1,48 +1,23 @@
 <template>
-  <div class="track">
-    <select class="sample-select" v-model="selectedSample">
-      <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
-    </select>
-    <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
-    <Slider
-            ref="lowpass"
-            title="Lowpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="18000"
-      @change="onLowpassValueChanged"
-    ></Slider>
-    <Slider
-            ref="highpass"
-            title="Highpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="0"
-      @change="onHighpassValueChanged"
-    ></Slider>
-      <Slider
-              ref="panning"
-              title="Panning"
-              :min="-1"
-              :max="1"
-              :step="0.1"
-              :defaultValue="0"
-              @change="onPanningValueChanged"
-      ></Slider>
-      <Slider ref="lBand" title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandValueChanged"></Slider>
-      <Slider ref="mBand" title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandValueChanged"></Slider>
-      <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider>
-
-    <input type="checkbox" class="checkbox" @change="onMutedChanged">
-    <input type="checkbox" class="checkbox" @change="onSoloChanged">
-    <Step
-      ref="steps"
-      v-for="n in 16"
-      :key="n"
-      :class="{'step--called': n - 1 === currentColumn}"
-      v-model="stepData[n - 1]"
-    ></Step>
-  </div>
+    <div class="track">
+        <select class="sample-select" v-model="selectedSample" title="choose sample">
+            <option v-for="sample in sampleNames" :key="sample">{{ sample }}</option>
+        </select>
+        <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onVolumeChange"></Slider>
+        <Slider ref="lowpass" title="Lowpass" :min="0" :max="18000" :defaultValue="18000"
+                @change="onLowpassValueChanged"></Slider>
+        <Slider ref="highpass" title="Highpass" :min="0" :max="18000" :defaultValue="0"
+                @change="onHighpassValueChanged"></Slider>
+        <Slider ref="panning" title="Panning" :min="-1" :max="1" :step="0.1" :defaultValue="0"
+                @change="onPanningValueChanged"></Slider>
+        <Slider ref="lBand" title="lBand" :min="-40" :max="40" :defaultValue="0" @change="onLBandValueChanged"></Slider>
+        <Slider ref="mBand" title="mBand" :min="-40" :max="40" :defaultValue="0" @change="onMBandValueChanged"></Slider>
+        <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider>
+        <input type="checkbox" class="checkbox" @change="onMutedChanged" title="check muted">
+        <input type="checkbox" class="checkbox" @change="onSoloChanged" title="check solo">
+        <Step ref="steps" v-for="n in 16" :key="n" :class="{'step--called': n - 1 === currentColumn}"
+              v-model="stepData[n - 1]"></Step>
+    </div>
 </template>
 
 <script>
@@ -83,8 +58,8 @@ export default {
     stepData: _.map(_.range(0, 16), () => false)
   }),
   computed: mapState({
-      masterButtonsPressed: state => state.masterButtonsPressed,
-      selectedTrack: state => state.selectedTrack,
+    masterButtonsPressed: state => state.masterButtonsPressed,
+    selectedTrack: state => state.selectedTrack,
     sampleNames: state => _.map(state.samples, sample => sample.name),
     sample(state) {
       return _.find(
@@ -134,8 +109,11 @@ export default {
     });
   },
   mounted() {
-      this.$midi.eventBus.addEventListener("masterKnob", this.onMidiVolumeChanged);
-
+    this.$midi.eventBus.addEventListener(
+      "masterKnob",
+      this.onMidiVolumeChanged
+    );
+    this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -158,7 +136,6 @@ export default {
     this.hBand.frequency.value = 13060;
     this.hBand.gain.value = INITIAL_EQ_GAIN;
     const analyser = this.$audio.audioContext.createAnalyser();
-
     this.lowpass
       .connect(this.highpass)
       .connect(this.panning)
@@ -167,9 +144,7 @@ export default {
       .connect(this.hBand)
       .connect(this.gain)
       .connect(this.$audio.connector);
-
     this.gain.connect(analyser);
-
     this.$store.commit(mutationTypes.UPDATE_ANALYSER_OF_TRACK, {
       trackId: this.id,
       analyserFunction: () => analyser
@@ -254,22 +229,20 @@ export default {
         volume
       });
     },
-      onMidiVolumeChanged(volume) {
-          console.log(this.masterButtonsPressed);
-        if(this.selectedTrack === this.id && !this.masterButtonsPressed) {
-            switch (volume.detail[1]) {
-                case 1:
-                    if (this.trackInformation.volume < 100)
-                    this.$refs.volume.value = this.trackInformation.volume + 1;
-                    break;
-                case 127:
-                    if (this.trackInformation.volume > 0)
-                        this.$refs.volume.value = this.trackInformation.volume - 1;
-                    break;
-            }
-
+    onMidiVolumeChanged(volume) {
+      if (this.selectedTrack === this.id && !this.masterButtonsPressed) {
+        switch (volume.detail[1]) {
+          case 1:
+            if (this.trackInformation.volume < 100)
+              this.$refs.volume.value = this.trackInformation.volume + 1;
+            break;
+          case 127:
+            if (this.trackInformation.volume > 0)
+              this.$refs.volume.value = this.trackInformation.volume - 1;
+            break;
         }
-      },
+      }
+    },
     onLowpassValueChanged(lowpass) {
       this.$store.commit(mutationTypes.UPDATE_LOWPASS_OF_TRACK, {
         trackId: this.id,

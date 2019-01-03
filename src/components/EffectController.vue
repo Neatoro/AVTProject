@@ -1,18 +1,8 @@
 <template>
   <div class="effect-controller">
-    <Slider
-      title="Lowpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="18000"
-      @change="onLowpassValueChanged"
+    <Slider title="Lowpass" :min="0" :max="18000" :defaultValue="18000" @change="onLowpassValueChanged"
     ></Slider>
-    <Slider
-      title="Highpass"
-      :min="0"
-      :max="18000"
-      :defaultValue="0"
-      @change="onHighpassValueChanged"
+    <Slider title="Highpass" :min="0" :max="18000" :defaultValue="0" @change="onHighpassValueChanged"
     ></Slider>
       <input type="radio" id="lowpass" name="filter-radios" @click="onLowRadio">
       <label for="lowpass">low</label>

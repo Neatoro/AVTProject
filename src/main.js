@@ -46,7 +46,6 @@ if (navigator.requestMIDIAccess) {
     midiAccess => {
       eventBus.addEventListener("track_changed", evt =>
         console.log(evt.detail)
-
       );
       Vue.prototype.$midi = {
         active: true,
@@ -56,16 +55,16 @@ if (navigator.requestMIDIAccess) {
 
       for (let input of midiAccess.inputs.values()) {
         input.onmidimessage = function(evt) {
-            console.log(evt.data);
+          console.log(evt.data);
           const note = evt.data[1];
-            const value = evt.data[2];
+          const value = evt.data[2];
           const mapping = _(mappings)
             .values()
             .find(mapping => mapping.keyCode === note);
 
           if (!_.isUndefined(mapping)) {
             const event = new CustomEvent(mapping.event, {
-              detail: [mapping.data, evt.data[2]]
+              detail: [mapping.data, value]
             });
             eventBus.dispatchEvent(event);
           }
