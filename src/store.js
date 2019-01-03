@@ -45,9 +45,17 @@ const privateMethods = {
   },
   updateMasterButtonsPressed: ({ state }) => {
     console.log(state);
+<<<<<<< HEAD
     if (state.masterVolumeIsPressed || state.masterTempoIsPressed)
       Vue.set(state, "masterButtonsPressed", true);
     else Vue.set(state, "masterButtonsPressed", false);
+=======
+    if (state.masterVolumeIsPressed || state.masterTempoIsPressed) {
+      Vue.set(state, "masterButtonsPressed", true);
+    } else {
+      Vue.set(state, "masterButtonsPressed", false);
+    }
+>>>>>>> WIP midi
   }
 };
 
@@ -180,6 +188,7 @@ export default new Vuex.Store({
         key: "hBand"
       });
     },
+<<<<<<< HEAD
     [mutationTypes.UPDATE_DELAY_OF_TRACK](state, { trackId, delay }) {
       privateMethods.updateTrackData({
         state,
@@ -189,6 +198,17 @@ export default new Vuex.Store({
       });
     },
     [mutationTypes.SET_SELECTED_TRACK](state, trackId) {
+=======
+    [mutationTypes.UPDATE_MBAND_OF_TRACK](state, { trackId, mBand }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: mBand,
+        key: "mBand"
+      });
+    },
+    [mutationTypes.SELECT_TRACK](state, trackId) {
+>>>>>>> WIP midi
       Vue.set(state, "selectedTrack", trackId);
     }
   },
@@ -206,23 +226,18 @@ export default new Vuex.Store({
                   return buffer;
                 }
               };
-
               commit(mutationTypes.ADD_SAMPLE, sample);
               resolve();
             })
             .catch(() => reject());
         });
-
         reader.addEventListener("error", () => reject());
-
         reader.readAsArrayBuffer(file);
       });
     },
     [actionTypes.NEXT_COLUMN]({ commit, state }) {
       const nextColumn = (state.currentColumn + 1) % 16;
-
       commit(mutationTypes.SET_CURRENT_COLUMN, nextColumn);
-
       return Promise.resolve();
     }
   }
