@@ -44,18 +44,11 @@ const privateMethods = {
     }
   },
   updateMasterButtonsPressed: ({ state }) => {
-    console.log(state);
-<<<<<<< HEAD
-    if (state.masterVolumeIsPressed || state.masterTempoIsPressed)
-      Vue.set(state, "masterButtonsPressed", true);
-    else Vue.set(state, "masterButtonsPressed", false);
-=======
     if (state.masterVolumeIsPressed || state.masterTempoIsPressed) {
       Vue.set(state, "masterButtonsPressed", true);
     } else {
       Vue.set(state, "masterButtonsPressed", false);
     }
->>>>>>> WIP midi
   }
 };
 
@@ -188,7 +181,6 @@ export default new Vuex.Store({
         key: "hBand"
       });
     },
-<<<<<<< HEAD
     [mutationTypes.UPDATE_DELAY_OF_TRACK](state, { trackId, delay }) {
       privateMethods.updateTrackData({
         state,
@@ -197,8 +189,6 @@ export default new Vuex.Store({
         key: "delay"
       });
     },
-    [mutationTypes.SET_SELECTED_TRACK](state, trackId) {
-=======
     [mutationTypes.UPDATE_MBAND_OF_TRACK](state, { trackId, mBand }) {
       privateMethods.updateTrackData({
         state,
@@ -207,8 +197,7 @@ export default new Vuex.Store({
         key: "mBand"
       });
     },
-    [mutationTypes.SELECT_TRACK](state, trackId) {
->>>>>>> WIP midi
+    [mutationTypes.SET_SELECTED_TRACK](state, trackId) {
       Vue.set(state, "selectedTrack", trackId);
     }
   },

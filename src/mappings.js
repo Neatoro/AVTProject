@@ -70,50 +70,17 @@ export default {
     event: "mVolume",
     data: {}
   },
-  TEMPO: {
-<<<<<<< HEAD
-      keyCode: 3,
-      event: "tempo",
-      data: {}
+  MASTER_LOWPASS: {
+    keyCode: 98,
+    event: "mLowpass",
+    data: {}
   },
-    TRACK_LOWPASS: {
-      //TODO: add correct keyCode @Eddie
-      keyCode: 12345,
-        event: "trackLowpass",
-        data: {}
-    },
-    TRACK_HIGHPASS: {
-        //TODO: add correct keyCode @Eddie
-        keyCode: 12345,
-        event: "trackHighpass",
-        data: {}
-    },
-    TRACK_L_BAND: {
-        //TODO: add correct keyCode @Eddie
-        keyCode: 12345,
-        event: "trackLBand",
-        data: {}
-    },
-    TRACK_M_BAND: {
-        //TODO: add correct keyCode @Eddie
-        keyCode: 12345,
-        event: "trackMBand",
-        data: {}
-    },
-    TRACK_H_BAND: {
-        //TODO: add correct keyCode @Eddie
-        keyCode: 12345,
-        event: "trackHBand",
-        data: {}
-    },
-    TRACK_PANNING: {
-        //TODO: add correct keyCode @Eddie
-        keyCode: 12345,
-        event: "trackPanning",
-        data: {}
-    }
-
-=======
+  MASTER_HIGHPASS: {
+    keyCode: 99,
+    event: "mHighpass",
+    data: {}
+  },
+  TEMPO: {
     keyCode: 3,
     event: "tempo",
     data: {}
@@ -124,129 +91,165 @@ export default {
     data: {}
   },
   MUTE: {
-    keyCode: 118,
+    keyCode: 119,
     event: "mute",
     data: {}
   },
-  EFFECT_KNOB_1: {
-    keyCode: 22,
-    event: "effectKnob1",
+  TRACK_LOWPASS: {
+    keyCode: 28,
+    event: "trackLowpass",
     data: {}
   },
-  EFFECT_KNOB_2: {
-    keyCode: 23,
-    event: "effectKnob2",
+  TRACK_HIGHPASS: {
+    keyCode: 29,
+    event: "trackHighpass",
     data: {}
   },
-  EFFECT_KNOB_3: {
-    keyCode: 24,
-    event: "effectKnob3",
+  TRACK_PANNING: {
+    keyCode: 30,
+    event: "trackPanning",
     data: {}
   },
-  EFFECT_KNOB_4: {
-    keyCode: 25,
-    event: "effectKnob4",
+  TRACK_L_BAND: {
+    keyCode: 31,
+    event: "trackLBand",
     data: {}
   },
-  EFFECT_KNOB_5: {
-    keyCode: 26,
-    event: "effectKnob5",
+  TRACK_M_BAND: {
+    keyCode: 32,
+    event: "trackMBand",
     data: {}
   },
-  EFFECT_KNOB_6: {
-    keyCode: 27,
-    event: "effectKnob6",
+  TRACK_H_BAND: {
+    keyCode: 33,
+    event: "trackHBand",
     data: {}
   },
   EFFECT_KNOB_7: {
-    keyCode: 27,
+    keyCode: 34,
     event: "effectKnob4",
     data: {}
   },
   EFFECT_KNOB_8: {
-    keyCode: 29,
+    keyCode: 35,
     event: "effectKnob8",
     data: {}
   },
   STEP_1: {
-    keyCode: 12,
+    keyCode: 24,
     event: "step_1",
-    data: {}
+    data: {
+      stepId: 1
+    }
   },
   STEP_2: {
-    keyCode: 13,
+    keyCode: 25,
     event: "step_2",
-    data: {}
+    data: {
+      stepId: 2
+    }
   },
   STEP_3: {
-    keyCode: 14,
+    keyCode: 26,
     event: "step_3",
-    data: {}
+    data: {
+      stepId: 3
+    }
   },
   STEP_4: {
-    keyCode: 15,
+    keyCode: 27,
     event: "step_4",
-    data: {}
+    data: {
+      stepId: 4
+    }
   },
   STEP_5: {
-    keyCode: 16,
+    keyCode: 20,
     event: "step_5",
-    data: {}
+    data: {
+      stepId: 5
+    }
   },
   STEP_6: {
-    keyCode: 17,
+    keyCode: 21,
     event: "step_6",
-    data: {}
+    data: {
+      stepId: 6
+    }
   },
   STEP_7: {
-    keyCode: 18,
+    keyCode: 22,
     event: "step_7",
-    data: {}
+    data: {
+      stepId: 7
+    }
   },
   STEP_8: {
-    keyCode: 19,
+    keyCode: 23,
     event: "step_8",
-    data: {}
+    data: {
+      stepId: 8
+    }
   },
   STEP_9: {
-    keyCode: 20,
+    keyCode: 16,
     event: "step_9",
-    data: {}
+    data: {
+      stepId: 9
+    }
   },
   STEP_10: {
-    keyCode: 21,
+    keyCode: 17,
     event: "step_10",
-    data: {}
+    data: {
+      stepId: 10
+    }
   },
   STEP_11: {
-    keyCode: 22,
+    keyCode: 18,
     event: "step_11",
-    data: {}
+    data: {
+      stepId: 11
+    }
   },
   STEP_12: {
-    keyCode: 23,
+    keyCode: 19,
     event: "step_12",
-    data: {}
+    data: {
+      stepId: 12
+    }
   },
   STEP_13: {
-    keyCode: 24,
+    keyCode: 12,
     event: "step_13",
-    data: {}
+    data: {
+      stepId: 13
+    }
   },
   STEP_14: {
-    keyCode: 25,
+    keyCode: 13,
     event: "step_14",
-    data: {}
+    data: {
+      stepId: 14
+    }
   },
   STEP_15: {
-    keyCode: 26,
+    keyCode: 14,
     event: "step_15",
-    data: {}
+    data: {
+      stepId: 15
+    }
   },
   STEP_16: {
-    keyCode: 27,
+    keyCode: 15,
     event: "step_16",
+    data: {
+      stepId: 16
+    }
+  },
+  ADD_TRACK: {
+    keyCode: 117,
+    event: "addTrack",
     data: {}
   }
->>>>>>> WIP midi
 };
