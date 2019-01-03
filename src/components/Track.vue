@@ -143,7 +143,8 @@ export default {
       );
     }
 
-    this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
+    this.$midi.eventBus.addEventListener("solo", this.onMidiSoloChanged);
+    this.$midi.eventBus.addEventListener("mute", this.onMidiMutedChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -284,6 +285,11 @@ export default {
         muted
       });
     },
+    onMidiMutedChanged() {
+      if (this.selectedTrack === this.id) {
+        this.$refs.mute.checked = !this.$refs.mute.checked;
+      }
+    },
     onSoloChanged(solo) {
       this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
         trackId: this.id,
@@ -293,6 +299,17 @@ export default {
     onSelectedTrack(evt) {
       evt.preventDefault();
       this.$store.commit(mutationTypes.SET_SELECTED_TRACK, this.id);
+    },
+    onMidiSoloChanged() {
+      if (this.selectedTrack === this.id) {
+        this.$refs.solo.checked = !this.$refs.solo.checked;
+      }
+    },
+    onVolumeChange(volume) {
+      this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
+        trackId: this.id,
+        volume
+      });
     },
     onMidiVolumeChanged(volume) {
       if (this.selectedTrack === this.id && !this.masterButtonsPressed) {
