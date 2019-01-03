@@ -71,7 +71,7 @@ export default {
     data: {}
   },
   TEMPO: {
-       keyCode: 3,
+    keyCode: 3,
     event: "tempo",
     data: {}
   },
@@ -80,130 +80,130 @@ export default {
     event: "solo",
     data: {}
   },
-   
+
   MUTE: {
     keyCode: 118,
     event: "mute",
     data: {}
   },
-    TRACK_LOWPASS: {
-    keyCode: 22,
-        event: "trackLowpass",
-        data: {}
-    },
-    TRACK_HIGHPASS: {
-    keyCode: 23,
-        event: "trackHighpass",
-        data: {}
-    },
-    TRACK_PANNING: {
-    keyCode: 24,
-        event: "trackPanning",
-        data: {}
-    },
-    
-    TRACK_L_BAND: {
-    keyCode: 25,
-        event: "trackLBand",
-        data: {}
-    },
-    TRACK_M_BAND: {
-    keyCode: 26,
-        event: "trackMBand",
-        data: {}
-    },
-    TRACK_H_BAND: {
-    keyCode: 27,
-        event: "trackHBand",
-        data: {}
-    },
+  TRACK_LOWPASS: {
+    keyCode: 14,
+    event: "trackLowpass",
+    data: {}
+  },
+  TRACK_HIGHPASS: {
+    keyCode: 15,
+    event: "trackHighpass",
+    data: {}
+  },
+  TRACK_PANNING: {
+    keyCode: 16,
+    event: "trackPanning",
+    data: {}
+  },
+
+  TRACK_L_BAND: {
+    keyCode: 17,
+    event: "trackLBand",
+    data: {}
+  },
+  TRACK_M_BAND: {
+    keyCode: 18,
+    event: "trackMBand",
+    data: {}
+  },
+  TRACK_H_BAND: {
+    keyCode: 19,
+    event: "trackHBand",
+    data: {}
+  },
   EFFECT_KNOB_7: {
-    keyCode: 27,
+    keyCode: 20,
     event: "effectKnob4",
     data: {}
   },
   EFFECT_KNOB_8: {
-    keyCode: 29,
+    keyCode: 21,
     event: "effectKnob8",
     data: {}
   },
   STEP_1: {
-    keyCode: 12,
+    keyCode: 200,
     event: "step_1",
     data: {}
   },
   STEP_2: {
-    keyCode: 13,
+    keyCode: 201,
     event: "step_2",
     data: {}
   },
   STEP_3: {
-    keyCode: 14,
+    keyCode: 202,
     event: "step_3",
     data: {}
   },
   STEP_4: {
-    keyCode: 15,
+    keyCode: 203,
     event: "step_4",
     data: {}
   },
   STEP_5: {
-    keyCode: 16,
+    keyCode: 204,
     event: "step_5",
     data: {}
   },
   STEP_6: {
-    keyCode: 17,
+    keyCode: 205,
     event: "step_6",
     data: {}
   },
   STEP_7: {
-    keyCode: 18,
+    keyCode: 206,
     event: "step_7",
     data: {}
   },
   STEP_8: {
-    keyCode: 19,
+    keyCode: 207,
     event: "step_8",
     data: {}
   },
   STEP_9: {
-    keyCode: 20,
+    keyCode: 208,
     event: "step_9",
     data: {}
   },
   STEP_10: {
-    keyCode: 21,
+    keyCode: 209,
     event: "step_10",
     data: {}
   },
   STEP_11: {
-    keyCode: 22,
+    keyCode: 210,
     event: "step_11",
     data: {}
   },
   STEP_12: {
-    keyCode: 23,
+    keyCode: 211,
     event: "step_12",
     data: {}
   },
   STEP_13: {
-    keyCode: 24,
+    keyCode: 212,
     event: "step_13",
     data: {}
   },
   STEP_14: {
-    keyCode: 25,
+    keyCode: 213,
     event: "step_14",
     data: {}
   },
   STEP_15: {
-    keyCode: 26,
+    keyCode: 214,
     event: "step_15",
     data: {}
   },
   STEP_16: {
-    keyCode: 27,
+    keyCode: 215,
     event: "step_16",
     data: {}
   }
