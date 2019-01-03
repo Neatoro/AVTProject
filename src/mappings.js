@@ -236,5 +236,10 @@ export default {
     data: {
       stepId: 16
     }
+  },
+  ADD_TRACK: {
+    keyCode: 117,
+    event: "addTrack",
+    data: {}
   }
 };
