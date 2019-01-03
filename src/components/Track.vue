@@ -135,6 +135,14 @@ export default {
       "trackPanning",
       this.onMidiPanningChanged
     );
+
+    for (let i = 0; i < 16; i++) {
+      this.$midi.eventBus.addEventListener(
+        "step_" + (i + 1),
+        this.onMidiStepsChanged
+      );
+    }
+
     this.$midi.eventBus.addEventListener("solo", this.onSoloChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
@@ -263,25 +271,16 @@ export default {
     }
   },
   methods: {
+    onMidiStepsChanged(step) {
+      const stepId = step.detail[0].stepId;
+      if (this.selectedTrack === this.id) {
+        this.$refs.steps[stepId - 1].value = !this.$refs.steps[stepId - 1]
+          .isActive;
+      }
+    },
     onMutedChanged(muted) {
       this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
         trackId: this.id,
-        onMidiHighpassChanged(highpass) {
-          if (this.selectedTrack === this.id) {
-            switch (highpass.detail[1]) {
-              case 1:
-                if (this.trackInformation.highpass < 18000)
-                  this.$refs.highpass.value =
-                    this.trackInformation.highpass + 1;
-                break;
-              case 127:
-                if (this.trackInformation.highpass > 0)
-                  this.$refs.highpass.value =
-                    this.trackInformation.highpass - 1;
-                break;
-            }
-          }
-        },
         muted
       });
     },
