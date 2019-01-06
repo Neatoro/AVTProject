@@ -28,7 +28,9 @@ export const mutationTypes = {
   SET_SELECTED_TRACK: "SET_SELECTED_TRACK",
   SET_MASTER_VOLUME: "SET_MASTER_VOLUME",
   MIDI_MASTER_VOLUME_PRESSED: "MIDI_MASTER_VOLUME_PRESSED",
-  MIDI_TEMPO_PRESSED: "MIDI_TEMPO_PRESSED"
+  MIDI_TEMPO_PRESSED: "MIDI_TEMPO_PRESSED",
+  MIDI_MASTER_LOWPASS_PRESSED: "MIDI_MASTER_LOWPASS_PRESSED",
+  MIDI_MASTER_HIGHPASS_PRESSED: "MIDI_MASTER_HIGHPASS_PRESSED"
 };
 
 export const actionTypes = {
@@ -44,7 +46,12 @@ const privateMethods = {
     }
   },
   updateMasterButtonsPressed: ({ state }) => {
-    if (state.masterVolumeIsPressed || state.masterTempoIsPressed) {
+    if (
+      state.masterVolumeIsPressed ||
+      state.masterTempoIsPressed ||
+      state.masterLowpassIsPressed ||
+      state.masterHighpassIsPressed
+    ) {
       Vue.set(state, "masterButtonsPressed", true);
     } else {
       Vue.set(state, "masterButtonsPressed", false);
@@ -66,6 +73,8 @@ export default new Vuex.Store({
     tracks: [],
     masterVolumeIsPressed: false,
     masterTempoIsPressed: false,
+    masterHighpassIsPressed: false,
+    masterLowpassIsPressed: false,
     masterButtonsPressed: false
   },
   mutations: {
@@ -171,6 +180,17 @@ export default new Vuex.Store({
     },
     [mutationTypes.MIDI_TEMPO_PRESSED](state, masterTempoIsPressed) {
       Vue.set(state, "masterTempoIsPressed", masterTempoIsPressed);
+      privateMethods.updateMasterButtonsPressed({ state });
+    },
+    [mutationTypes.MIDI_MASTER_HIGHPASS_PRESSED](
+      state,
+      masterHighpassIsPressed
+    ) {
+      Vue.set(state, "masterHighpassIsPressed", masterHighpassIsPressed);
+      privateMethods.updateMasterButtonsPressed({ state });
+    },
+    [mutationTypes.MIDI_MASTER_LOWPASS_PRESSED](state, masterLowpassIsPressed) {
+      Vue.set(state, "masterLowpassIsPressed", masterLowpassIsPressed);
       privateMethods.updateMasterButtonsPressed({ state });
     },
     [mutationTypes.UPDATE_HBAND_OF_TRACK](state, { trackId, hBand }) {
