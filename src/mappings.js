@@ -70,6 +70,16 @@ export default {
     event: "mVolume",
     data: {}
   },
+  MASTER_LOWPASS: {
+    keyCode: 98,
+    event: "mLowpass",
+    data: {}
+  },
+  MASTER_HIGHPASS: {
+    keyCode: 99,
+    event: "mHighpass",
+    data: {}
+  },
   TEMPO: {
     keyCode: 3,
     event: "tempo",
