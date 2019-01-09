@@ -24,6 +24,7 @@ export const mutationTypes = {
   UPDATE_LBAND_OF_TRACK: "UPDATE_LBAND_OF_TRACK",
   UPDATE_MBAND_OF_TRACK: "UPDATE_MBAND_OF_TRACK",
   UPDATE_HBAND_OF_TRACK: "UPDATE_HBAND_OF_TRACK",
+  UPDATE_DELAY_OF_TRACK: "UPDATE_DELAY_OF_TRACK",
   SET_SELECTED_TRACK: "SET_SELECTED_TRACK"
 };
 
@@ -51,7 +52,7 @@ export default new Vuex.Store({
     selectedPreset: "None",
     presets,
     tracks: [],
-    selectedTrack: -1
+    selectedTrack: 1
   },
   mutations: {
     [mutationTypes.INCREMENT_TRACK_COUNT](state) {
@@ -73,6 +74,7 @@ export default new Vuex.Store({
       Vue.set(state, "selectedPreset", presetName);
     },
     [mutationTypes.ADD_TRACK](state, trackData) {
+      console.log(trackData);
       state.tracks.push(trackData);
     },
     [mutationTypes.UPDATE_VOLUME_OF_TRACK](state, { trackId, volume }) {
@@ -164,6 +166,14 @@ export default new Vuex.Store({
         trackId,
         value: hBand,
         key: "hBand"
+      });
+    },
+    [mutationTypes.UPDATE_DELAY_OF_TRACK](state, { trackId, delay }) {
+      privateMethods.updateTrackData({
+        state,
+        trackId,
+        value: delay,
+        key: "delay"
       });
     },
     [mutationTypes.SET_SELECTED_TRACK](state, trackId) {

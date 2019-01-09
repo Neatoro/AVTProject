@@ -51,7 +51,7 @@ export default {
     border-left: 3px solid #a72329;
   }
 
-  &::after {
+  &:after {
     content: "";
     position: absolute;
     left: 0;
@@ -64,10 +64,20 @@ export default {
       rgba(255, 255, 255, 0.15) 100%
     );
   }
-}
 
-.step--active {
-  box-shadow: inset 0 0 80px 40px #cb2a32, inset 0 0 200px 100px #f8333c,
-    0 0 2px 1px rgba(255, 255, 255, 0.3);
+  &--active {
+    box-shadow: inset 0 0 80px 40px #cb2a32, inset 0 0 200px 100px #f8333c,
+      0 0 2px 1px rgba(255, 255, 255, 0.3);
+
+    &.step--played {
+      box-shadow: inset 0 0 80px 40px #cb2a32, inset 0 0 200px 100px #f8333c,
+        0 0 2px 1px rgba(255, 255, 255, 0.3), 0 0 2px 1px #44af69;
+    }
+  }
+
+  &--played {
+    box-shadow: inset 0 0 80px 40px #333, inset 0 0 20px 10px #eee,
+      0 0 2px 1px rgba(255, 255, 255, 0.3), 0 0 2px 1px #44af69;
+  }
 }
 </style>

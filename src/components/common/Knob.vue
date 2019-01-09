@@ -6,7 +6,9 @@
       <path d="M20,76 A 40 40 0 1 1 80 76" fill="none" class="full-path"></path>
       <path d="M20,76 A 40 40 0 1 1 80 76" fill="none" class="part-path" :style="pathStyle"></path>
     </svg>
-    <p class="knob-label">{{ label }}</p>
+    <p class="knob-label">
+      <nobr>{{ label }}</nobr>
+    </p>
   </div>
 </template>
 
@@ -104,7 +106,7 @@ export default {
   width: 60px;
   height: 120px;
   position: relative;
-  border-bottom: 1px solid #0d0b0e;
+  margin: 0 16px;
 
   &:first-child {
     margin: 0;

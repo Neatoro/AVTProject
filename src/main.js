@@ -16,8 +16,8 @@ lowpass.frequency.value = 18000;
 const highpass = audioContext.createBiquadFilter();
 highpass.type = "highpass";
 highpass.frequency.value = 0;
-connector.connect(highpass);
-connector.connect(lowpass);
+connector.connect(highpass).connect(gain);
+connector.connect(lowpass).connect(gain);
 gain.connect(audioContext.destination);
 const analyser = audioContext.createAnalyser();
 gain.connect(analyser);
@@ -39,7 +39,11 @@ let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
 let renderer;
 
-Vue.prototype.$three = { scene, camera, renderer };
+Vue.prototype.$three = {
+  scene,
+  camera,
+  renderer
+};
 
 Vue.component("v-select", VueSelect);
 

@@ -32,14 +32,14 @@ export default {
 <style lang="scss">
 .sequencer {
   background-color: #202020;
-  max-height: calc(100vh - 297px);
+  max-height: 30vh;
   overflow-y: scroll;
   padding: 8px;
   position: relative;
 }
 
 .adder {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);

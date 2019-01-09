@@ -7,24 +7,15 @@
       class="avt__dropdown"
       :options="sampleNames"
     />
-    <!-- <Slider title="Delay" :min="0" :max="5" :defaultValue="0" :step="0.1" @change="onDelayTimeValueChange"></Slider>
-      <Slider
-              ref="panning"
-              title="Panning"
-              :min="-1"
-              :max="1"
-              :step="0.1"
-              :defaultValue="0"
-              @change="onPanningValueChanged"
-      ></Slider>
-      <Slider ref="lBand" title="lBand" :min="-40" :max="40"  :defaultValue="0" @change="onLBandValueChanged"></Slider>
-      <Slider ref="mBand" title="mBand" :min="-40" :max="40"  :defaultValue="0" @change="onMBandValueChanged"></Slider>
-      <Slider ref="hBand" title="hBand" :min="-40" :max="40" :defaultValue="0" @change="onHBandValueChanged"></Slider> -->
+    <div class="toggle__group">
+      <Toggle ref="muted" label="M" @change="onMutedChanged"/>
+      <Toggle ref="solo" label="S" @change="onSoloChanged"/>
+    </div>
     <Step
       ref="steps"
       v-for="n in 16"
       :key="n"
-      :class="{'step--called': n - 1 === currentColumn}"
+      :class="{'step--played': n - 1 === currentColumn}"
       v-model="stepData[n - 1]"
     ></Step>
   </div>
@@ -37,6 +28,7 @@ import { mapState } from "vuex";
 import { mutationTypes } from "@/store";
 import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
+import Toggle from "@/components/common/Toggle.vue";
 
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
@@ -47,7 +39,8 @@ export default {
   name: "Track",
   components: {
     Slider,
-    Step
+    Step,
+    Toggle
   },
   props: {
     id: {
@@ -56,6 +49,7 @@ export default {
     }
   },
   data: () => ({
+    source: null,
     selectedSample: null,
     lowpass: null,
     highpass: null,
@@ -114,6 +108,7 @@ export default {
       lBand: INITIAL_EQ_GAIN,
       mBand: INITIAL_EQ_GAIN,
       hBand: INITIAL_EQ_GAIN,
+      delay: 0,
       stepData: this.stepData,
       volume: 100,
       analyser: null
@@ -164,18 +159,41 @@ export default {
   },
   watch: {
     selectedSample() {
-      this.onLowpassValueChanged(INITIAL_LOWPASS_VALUE);
-      this.$refs.lowpass.value = INITIAL_LOWPASS_VALUE;
-      this.onHighpassValueChanged(INITIAL_HIGHPASS_VALUE);
-      this.$refs.highpass.value = INITIAL_HIGHPASS_VALUE;
-      this.onPanningValueChanged(INITIAL_PANNING_VALUE);
-      this.$refs.panning.value = INITIAL_PANNING_VALUE;
-      this.onLBandValueChanged(INITIAL_EQ_GAIN);
-      this.$refs.lBand.value = INITIAL_EQ_GAIN;
-      this.onMBandValueChanged(INITIAL_EQ_GAIN);
-      this.$refs.mBand.value = INITIAL_EQ_GAIN;
-      this.onHBandValueChanged(INITIAL_EQ_GAIN);
-      this.$refs.hBand.value = INITIAL_EQ_GAIN;
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_LOWPASS_OF_TRACK,
+        value: INITIAL_LOWPASS_VALUE,
+        propName: "lowpass"
+      });
+
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_HIGHPASS_OF_TRACK,
+        value: INITIAL_HIGHPASS_VALUE,
+        propName: "highpass"
+      });
+
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_PANNING_OF_TRACK,
+        value: INITIAL_PANNING_VALUE,
+        propName: "panning"
+      });
+
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_LBAND_OF_TRACK,
+        value: INITIAL_EQ_GAIN,
+        propName: "lBand"
+      });
+
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_MBAND_OF_TRACK,
+        value: INITIAL_EQ_GAIN,
+        propName: "mBand"
+      });
+
+      this.resetValue({
+        mutation: mutationTypes.UPDATE_HBAND_OF_TRACK,
+        value: INITIAL_EQ_GAIN,
+        propName: "hBand"
+      });
     },
     currentColumn: "play",
     presetName() {
@@ -218,41 +236,35 @@ export default {
     },
     ["trackInformation.hBand"]() {
       this.hBand.gain.value = this.trackInformation.hBand;
+    },
+    ["trackInformation.delay"]() {
+      this.delay.delayTime.setValueAtTime(
+        this.trackInformation.delay,
+        this.$audio.audioContext.currentTime
+      );
     }
   },
   methods: {
+    onMutedChanged(muted) {
+      this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
+        trackId: this.id,
+        muted
+      });
+    },
+    onSoloChanged(solo) {
+      this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
+        trackId: this.id,
+        solo
+      });
+    },
     onSelectedTrack(evt) {
       evt.preventDefault();
       this.$store.commit(mutationTypes.SET_SELECTED_TRACK, this.id);
     },
-    onDelayTimeValueChange(delay) {
-        this.delay.delayTime.setValueAtTime(
-            delay,
-            this.$audio.audioContext.currentTime
-        );
-    },
-    onPanningValueChanged(panning) {
-      this.$store.commit(mutationTypes.UPDATE_PANNING_OF_TRACK, {
+    resetValue({ mutation, value, propName }) {
+      this.$store.commit(mutation, {
         trackId: this.id,
-        panning
-      });
-    },
-    onLBandValueChanged(lBand) {
-      this.$store.commit(mutationTypes.UPDATE_LBAND_OF_TRACK, {
-        trackId: this.id,
-        lBand
-      });
-    },
-    onMBandValueChanged(mBand) {
-      this.$store.commit(mutationTypes.UPDATE_MBAND_OF_TRACK, {
-        trackId: this.id,
-        mBand
-      });
-    },
-    onHBandValueChanged(hBand) {
-      this.$store.commit(mutationTypes.UPDATE_HBAND_OF_TRACK, {
-        trackId: this.id,
-        hBand
+        [propName]: value
       });
     },
     play() {
@@ -263,17 +275,24 @@ export default {
         !this.trackInformation.muted &&
         (!this.isAnySongSolo || this.trackInformation.solo)
       ) {
-        const source = this.$audio.audioContext.createBufferSource();
-        source.connect(this.lowpass);
+        if (!_.isNil(this.source)) {
+          this.source.disconnect(this.lowpass);
+        }
+
+        this.source = this.$audio.audioContext.createBufferSource();
+        this.source.connect(this.lowpass);
+
         audioBufferSlice(
           this.sample.data(),
           0,
           60000 / (4 * this.bpm),
           function(error, slicedBuffer) {
-            source.buffer = slicedBuffer;
-            source.loop = false;
-            source.start();
-            setTimeout(source.start, this.trackInformation.delay*1000);
+            this.source.buffer = slicedBuffer;
+            this.source.loop = false;
+            this.source.start();
+            if (this.trackInformation.delay !== 0) {
+              setTimeout(this.source.start, this.trackInformation.delay * 1000);
+            }
           }.bind(this)
         );
       }
@@ -293,7 +312,7 @@ export default {
     height: 12vh;
 
     .btn--select {
-      display: none;
+      background-color: #333;
     }
   }
 

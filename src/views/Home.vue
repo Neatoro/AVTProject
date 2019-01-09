@@ -1,11 +1,7 @@
 <template>
   <div class="home">
-    <div class="master">
-      <Controller/>
-      <EffectController/>
-      <DataController/>
-      <Visualization/>
-    </div>
+    <Visualization/>
+    <MasterController/>
     <div class="tracks">
       <TrackController/>
       <Sequencer/>
@@ -14,9 +10,7 @@
 </template>
 
 <script>
-import Controller from "@/components/Controller.vue";
-import DataController from "@/components/DataController.vue";
-import EffectController from "@/components/EffectController.vue";
+import MasterController from "@/components/MasterController.vue";
 import Sequencer from "@/components/Sequencer.vue";
 import TrackController from "@/components/TrackController.vue";
 import Visualization from "@/components/Visualization.vue";
@@ -25,11 +19,9 @@ export default {
   name: "home",
   components: {
     Sequencer,
-    EffectController,
-    Controller,
+    MasterController,
     TrackController,
-    Visualization,
-    DataController
+    Visualization
   }
 };
 </script>
@@ -41,33 +33,22 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-
-  .tracks {
-    flex: 1 0 auto;
-  }
 }
 
-.master {
-  display: flex;
+.viz {
+  flex: 1 0 auto;
+}
+
+.controller,
+.viz {
   border-bottom: 3px solid #f77f00;
-
-  .controller,
-  .effect-controller,
-  .data-controller {
-    border-right: 3px solid #f77f00;
-  }
-
-  .viz {
-    flex: 1 0 auto;
-  }
 }
 
 .tracks {
   display: flex;
-
-  .track-controller {
-    border-right: 3px solid #f77f00;
-  }
+  flex-direction: column;
+  flex: 1 0 auto;
+  max-height: 70vh;
 
   .sequencer {
     flex: 1 0 auto;
