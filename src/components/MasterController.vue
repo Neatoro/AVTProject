@@ -61,6 +61,7 @@ import MidiVolume from "@/components/midi/master/Volume.vue";
 import MidiBPM from "@/components/midi/master/BPM.vue";
 import MidiHighpass from "@/components/midi/master/Highpass.vue";
 import MidiLowpass from "@/components/midi/master/Lowpass.vue";
+import MidiTrackChanger from "@/components/midi/track/TrackChanger.vue";
 
 function tick() {
   this.$store.dispatch(actionTypes.NEXT_COLUMN);
@@ -95,7 +96,7 @@ export default {
     bpm: state => state.bpm,
     presetNames: state => _.map(state.presets, preset => preset.name)
   }),
-  mixins: [MidiVolume, MidiBPM, MidiHighpass, MidiLowpass],
+  mixins: [MidiVolume, MidiBPM, MidiHighpass, MidiLowpass, MidiTrackChanger],
   watch: {
     isPlaying() {
       if (this.isPlaying) {

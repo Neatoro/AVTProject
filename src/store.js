@@ -218,7 +218,9 @@ export default new Vuex.Store({
       });
     },
     [mutationTypes.SET_SELECTED_TRACK](state, trackId) {
-      Vue.set(state, "selectedTrack", trackId);
+      if (trackId <= state.trackCount) {
+        Vue.set(state, "selectedTrack", trackId);
+      }
     }
   },
   actions: {

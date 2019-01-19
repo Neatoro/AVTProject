@@ -15,15 +15,14 @@ export default {
     return { isActive: this.value };
   },
   watch: {
-    value() {
-      this.isActive = this.value;
+    isActive() {
+      this.$emit("input", this.isActive);
     }
   },
   methods: {
     onClick(evt) {
       evt.preventDefault();
       this.isActive = !this.isActive;
-      this.$emit("input", this.isActive);
     }
   }
 };

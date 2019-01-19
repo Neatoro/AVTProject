@@ -30,6 +30,10 @@ import Slider from "@/components/Slider.vue";
 import Step from "@/components/Step.vue";
 import Toggle from "@/components/common/Toggle.vue";
 
+import MidiMuted from "@/components/midi/track/Muted.vue";
+import MidiSolo from "@/components/midi/track/Solo.vue";
+import MidiStep from "@/components/midi/track/Step.vue";
+
 const INITIAL_LOWPASS_VALUE = 18000;
 const INITIAL_HIGHPASS_VALUE = 0;
 const INITIAL_PANNING_VALUE = 0;
@@ -48,6 +52,7 @@ export default {
       required: true
     }
   },
+  mixins: [MidiMuted, MidiSolo, MidiStep],
   data: () => ({
     source: null,
     selectedSample: null,
@@ -115,36 +120,6 @@ export default {
     });
   },
   mounted() {
-    this.$midi.eventBus.addEventListener(
-      "masterKnob",
-      this.onMidiVolumeChanged
-    );
-
-    this.$midi.eventBus.addEventListener(
-      "trackLowpass",
-      this.onMidiLowpassChanged
-    );
-    this.$midi.eventBus.addEventListener(
-      "trackHighpass",
-      this.onMidiHighpassChanged
-    );
-    this.$midi.eventBus.addEventListener("trackLBand", this.onMidiLBandChanged);
-    this.$midi.eventBus.addEventListener("trackMBand", this.onMidiMBandChanged);
-    this.$midi.eventBus.addEventListener("trackHBand", this.onMidiHBandChanged);
-    this.$midi.eventBus.addEventListener(
-      "trackPanning",
-      this.onMidiPanningChanged
-    );
-
-    for (let i = 0; i < 16; i++) {
-      this.$midi.eventBus.addEventListener(
-        "step_" + (i + 1),
-        this.onMidiStepsChanged
-      );
-    }
-
-    this.$midi.eventBus.addEventListener("solo", this.onMidiSoloChanged);
-    this.$midi.eventBus.addEventListener("mute", this.onMidiMutedChanged);
     this.gain = this.$audio.audioContext.createGain();
     this.lowpass = this.$audio.audioContext.createBiquadFilter();
     this.lowpass.frequency.value = INITIAL_LOWPASS_VALUE;
@@ -274,23 +249,11 @@ export default {
     }
   },
   methods: {
-    onMidiStepsChanged(step) {
-      const stepId = step.detail[0].stepId;
-      if (this.selectedTrack === this.id) {
-        this.$refs.steps[stepId - 1].value = !this.$refs.steps[stepId - 1]
-          .isActive;
-      }
-    },
     onMutedChanged(muted) {
       this.$store.commit(mutationTypes.UPDATE_MUTED_OF_TRACK, {
         trackId: this.id,
         muted
       });
-    },
-    onMidiMutedChanged() {
-      if (this.selectedTrack === this.id) {
-        this.$refs.mute.checked = !this.$refs.mute.checked;
-      }
     },
     onSoloChanged(solo) {
       this.$store.commit(mutationTypes.UPDATE_SOLO_OF_TRACK, {
@@ -301,117 +264,6 @@ export default {
     onSelectedTrack(evt) {
       evt.preventDefault();
       this.$store.commit(mutationTypes.SET_SELECTED_TRACK, this.id);
-    },
-    onMidiSoloChanged() {
-      if (this.selectedTrack === this.id) {
-        this.$refs.solo.checked = !this.$refs.solo.checked;
-      }
-    },
-    onVolumeChange(volume) {
-      this.$store.commit(mutationTypes.UPDATE_VOLUME_OF_TRACK, {
-        trackId: this.id,
-        volume
-      });
-    },
-    onMidiVolumeChanged(volume) {
-      if (this.selectedTrack === this.id && !this.masterButtonsPressed) {
-        switch (volume.detail[1]) {
-          case 1:
-            if (this.trackInformation.volume < 100)
-              this.$refs.volume.value = this.trackInformation.volume + 1;
-            break;
-          case 127:
-            if (this.trackInformation.volume > 0)
-              this.$refs.volume.value = this.trackInformation.volume - 1;
-            break;
-        }
-      }
-    },
-    onMidiLowpassChanged(lowpass) {
-      if (this.selectedTrack === this.id) {
-        switch (lowpass.detail[1]) {
-          case 1:
-            if (this.trackInformation.lowpass < 18000)
-              this.$refs.lowpass.value = this.trackInformation.lowpass + 100;
-            break;
-          case 127:
-            if (this.trackInformation.lowpass > 0)
-              this.$refs.lowpass.value = this.trackInformation.lowpass - 100;
-            break;
-        }
-      }
-    },
-    onMidiHighpassChanged(highpass) {
-      if (this.selectedTrack === this.id) {
-        switch (highpass.detail[1]) {
-          case 1:
-            if (this.trackInformation.highpass < 18000)
-              this.$refs.highpass.value = this.trackInformation.highpass + 100;
-            break;
-          case 127:
-            if (this.trackInformation.highpass > 0)
-              this.$refs.highpass.value = this.trackInformation.highpass - 100;
-            break;
-        }
-      }
-    },
-    onMidiPanningChanged(panning) {
-      if (this.selectedTrack === this.id) {
-        switch (panning.detail[1]) {
-          case 1:
-            if (this.trackInformation.panning < 1)
-              this.$refs.panning.value =
-                Math.round((this.trackInformation.panning + 0.1) * 100) / 100;
-            break;
-          case 127:
-            if (this.trackInformation.panning > -1)
-              this.$refs.panning.value =
-                Math.round((this.trackInformation.panning - 0.1) * 100) / 100;
-            break;
-        }
-      }
-    },
-    onMidiLBandChanged(lBand) {
-      if (this.selectedTrack === this.id) {
-        switch (lBand.detail[1]) {
-          case 1:
-            if (this.trackInformation.lBand < 40)
-              this.$refs.lBand.value = this.trackInformation.lBand + 1;
-            break;
-          case 127:
-            if (this.trackInformation.lBand > -40)
-              this.$refs.lBand.value = this.trackInformation.lBand - 1;
-            break;
-        }
-      }
-    },
-    onMidiMBandChanged(mBand) {
-      if (this.selectedTrack === this.id) {
-        switch (mBand.detail[1]) {
-          case 1:
-            if (this.trackInformation.mBand < 40)
-              this.$refs.mBand.value = this.trackInformation.mBand + 1;
-            break;
-          case 127:
-            if (this.trackInformation.mBand > -40)
-              this.$refs.mBand.value = this.trackInformation.mBand - 1;
-            break;
-        }
-      }
-    },
-    onMidiHBandChanged(hBand) {
-      if (this.selectedTrack === this.id) {
-        switch (hBand.detail[1]) {
-          case 1:
-            if (this.trackInformation.hBand < 40)
-              this.$refs.hBand.value = this.trackInformation.hBand + 1;
-            break;
-          case 127:
-            if (this.trackInformation.hBand > -40)
-              this.$refs.hBand.value = this.trackInformation.hBand - 1;
-            break;
-        }
-      }
     },
     resetValue({ mutation, value, propName }) {
       this.$store.commit(mutation, {

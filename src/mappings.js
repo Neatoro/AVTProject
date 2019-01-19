@@ -95,44 +95,44 @@ export default {
     event: "mute",
     data: {}
   },
-  TRACK_LOWPASS: {
+  TRACK_VOLUME: {
     keyCode: 28,
+    event: "trackVolume",
+    data: {}
+  },
+  TRACK_LOWPASS: {
+    keyCode: 29,
     event: "trackLowpass",
     data: {}
   },
   TRACK_HIGHPASS: {
-    keyCode: 29,
+    keyCode: 30,
     event: "trackHighpass",
     data: {}
   },
+  TRACK_DELAY: {
+    keyCode: 31,
+    event: "trackDelay",
+    data: {}
+  },
   TRACK_PANNING: {
-    keyCode: 30,
+    keyCode: 32,
     event: "trackPanning",
     data: {}
   },
   TRACK_L_BAND: {
-    keyCode: 31,
+    keyCode: 33,
     event: "trackLBand",
     data: {}
   },
   TRACK_M_BAND: {
-    keyCode: 32,
+    keyCode: 34,
     event: "trackMBand",
     data: {}
   },
   TRACK_H_BAND: {
-    keyCode: 33,
-    event: "trackHBand",
-    data: {}
-  },
-  EFFECT_KNOB_7: {
-    keyCode: 34,
-    event: "effectKnob4",
-    data: {}
-  },
-  EFFECT_KNOB_8: {
     keyCode: 35,
-    event: "effectKnob8",
+    event: "trackHBand",
     data: {}
   },
   STEP_1: {
