@@ -2,6 +2,7 @@
   <div class="controller">
     <h2 class="controller__title">Master Controller</h2>
     <Knob
+      ref="volume"
       label="Volume"
       :min="0"
       :max="100"
@@ -9,8 +10,9 @@
       :changeFactor="0.8"
       @change="onMasterVolumeChanged"
     />
-    <Knob label="BPM" :min="80" :max="220" :initialValue="80" @change="onBPMChanged"/>
+    <Knob ref="bpm" label="BPM" :min="80" :max="220" :initialValue="80" @change="onBPMChanged"/>
     <Knob
+      ref="lowpass"
       label="Lowpass"
       :min="0"
       :max="18000"
@@ -19,6 +21,7 @@
       @change="onLowpassValueChanged"
     />
     <Knob
+      ref="highpass"
       label="Highpass"
       :min="0"
       :max="18000"
@@ -54,6 +57,11 @@ import Interval from "@/utils/editableInterval";
 import Knob from "@/components/common/Knob.vue";
 import Slider from "@/components/Slider.vue";
 
+import MidiVolume from "@/components/midi/master/Volume.vue";
+import MidiBPM from "@/components/midi/master/BPM.vue";
+import MidiHighpass from "@/components/midi/master/Highpass.vue";
+import MidiLowpass from "@/components/midi/master/Lowpass.vue";
+
 function tick() {
   this.$store.dispatch(actionTypes.NEXT_COLUMN);
 }
@@ -87,6 +95,7 @@ export default {
     bpm: state => state.bpm,
     presetNames: state => _.map(state.presets, preset => preset.name)
   }),
+  mixins: [MidiVolume, MidiBPM, MidiHighpass, MidiLowpass],
   watch: {
     isPlaying() {
       if (this.isPlaying) {

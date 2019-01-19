@@ -222,7 +222,9 @@ export default {
         propName: "hBand"
       });
     },
-    currentColumn: "play",
+    currentColumn() {
+      this.play();
+    },
     presetName() {
       const presetStepData = _.clone(
         _.get(this.currentPresetForTrack, "steps")
@@ -352,100 +354,100 @@ export default {
             break;
         }
       }
-    }
-  },
-  onMidiPanningChanged(panning) {
-    if (this.selectedTrack === this.id) {
-      switch (panning.detail[1]) {
-        case 1:
-          if (this.trackInformation.panning < 1)
-            this.$refs.panning.value =
-              Math.round((this.trackInformation.panning + 0.1) * 100) / 100;
-          break;
-        case 127:
-          if (this.trackInformation.panning > -1)
-            this.$refs.panning.value =
-              Math.round((this.trackInformation.panning - 0.1) * 100) / 100;
-          break;
+    },
+    onMidiPanningChanged(panning) {
+      if (this.selectedTrack === this.id) {
+        switch (panning.detail[1]) {
+          case 1:
+            if (this.trackInformation.panning < 1)
+              this.$refs.panning.value =
+                Math.round((this.trackInformation.panning + 0.1) * 100) / 100;
+            break;
+          case 127:
+            if (this.trackInformation.panning > -1)
+              this.$refs.panning.value =
+                Math.round((this.trackInformation.panning - 0.1) * 100) / 100;
+            break;
+        }
       }
-    }
-  },
-  onMidiLBandChanged(lBand) {
-    if (this.selectedTrack === this.id) {
-      switch (lBand.detail[1]) {
-        case 1:
-          if (this.trackInformation.lBand < 40)
-            this.$refs.lBand.value = this.trackInformation.lBand + 1;
-          break;
-        case 127:
-          if (this.trackInformation.lBand > -40)
-            this.$refs.lBand.value = this.trackInformation.lBand - 1;
-          break;
+    },
+    onMidiLBandChanged(lBand) {
+      if (this.selectedTrack === this.id) {
+        switch (lBand.detail[1]) {
+          case 1:
+            if (this.trackInformation.lBand < 40)
+              this.$refs.lBand.value = this.trackInformation.lBand + 1;
+            break;
+          case 127:
+            if (this.trackInformation.lBand > -40)
+              this.$refs.lBand.value = this.trackInformation.lBand - 1;
+            break;
+        }
       }
-    }
-  },
-  onMidiMBandChanged(mBand) {
-    if (this.selectedTrack === this.id) {
-      switch (mBand.detail[1]) {
-        case 1:
-          if (this.trackInformation.mBand < 40)
-            this.$refs.mBand.value = this.trackInformation.mBand + 1;
-          break;
-        case 127:
-          if (this.trackInformation.mBand > -40)
-            this.$refs.mBand.value = this.trackInformation.mBand - 1;
-          break;
+    },
+    onMidiMBandChanged(mBand) {
+      if (this.selectedTrack === this.id) {
+        switch (mBand.detail[1]) {
+          case 1:
+            if (this.trackInformation.mBand < 40)
+              this.$refs.mBand.value = this.trackInformation.mBand + 1;
+            break;
+          case 127:
+            if (this.trackInformation.mBand > -40)
+              this.$refs.mBand.value = this.trackInformation.mBand - 1;
+            break;
+        }
       }
-    }
-  },
-  onMidiHBandChanged(hBand) {
-    if (this.selectedTrack === this.id) {
-      switch (hBand.detail[1]) {
-        case 1:
-          if (this.trackInformation.hBand < 40)
-            this.$refs.hBand.value = this.trackInformation.hBand + 1;
-          break;
-        case 127:
-          if (this.trackInformation.hBand > -40)
-            this.$refs.hBand.value = this.trackInformation.hBand - 1;
-          break;
+    },
+    onMidiHBandChanged(hBand) {
+      if (this.selectedTrack === this.id) {
+        switch (hBand.detail[1]) {
+          case 1:
+            if (this.trackInformation.hBand < 40)
+              this.$refs.hBand.value = this.trackInformation.hBand + 1;
+            break;
+          case 127:
+            if (this.trackInformation.hBand > -40)
+              this.$refs.hBand.value = this.trackInformation.hBand - 1;
+            break;
+        }
       }
-    }
-  },
-  resetValue({ mutation, value, propName }) {
-    this.$store.commit(mutation, {
-      trackId: this.id,
-      [propName]: value
-    });
-  },
-  play() {
-    const shouldPlay = this.trackInformation.stepData[this.currentColumn];
-    if (
-      shouldPlay &&
-      !_.isNil(this.sample) &&
-      !this.trackInformation.muted &&
-      (!this.isAnySongSolo || this.trackInformation.solo)
-    ) {
-      if (!_.isNil(this.source)) {
-        this.source.disconnect(this.lowpass);
-      }
+    },
+    resetValue({ mutation, value, propName }) {
+      this.$store.commit(mutation, {
+        trackId: this.id,
+        [propName]: value
+      });
+    },
+    play() {
+      const shouldPlay = this.trackInformation.stepData[this.currentColumn];
+      if (
+        shouldPlay &&
+        !_.isNil(this.sample) &&
+        !this.trackInformation.muted &&
+        (!this.isAnySongSolo || this.trackInformation.solo)
+      ) {
+        if (!_.isNil(this.source)) {
+          this.source.disconnect(this.lowpass);
+        }
 
-      this.source = this.$audio.audioContext.createBufferSource();
-      this.source.connect(this.lowpass);
+        this.source = this.$audio.audioContext.createBufferSource();
+        this.source.connect(this.lowpass);
 
-      audioBufferSlice(
-        this.sample.data(),
-        0,
-        60000 / (4 * this.bpm),
-        function(error, slicedBuffer) {
-          this.source.buffer = slicedBuffer;
-          this.source.loop = false;
-          this.source.start();
-          if (this.trackInformation.delay !== 0) {
-            setTimeout(this.source.start, this.trackInformation.delay * 1000);
-          }
-        }.bind(this)
-      );
+        audioBufferSlice(
+          this.sample.data(),
+          0,
+          60000 / (4 * this.bpm),
+          function(error, slicedBuffer) {
+            this.source.buffer = slicedBuffer;
+            this.source.loop = false;
+            this.source.start();
+            if (this.trackInformation.delay !== 0) {
+              setTimeout(this.source.start, this.trackInformation.delay * 1000);
+            }
+          }.bind(this)
+        );
+      }
     }
   }
 };

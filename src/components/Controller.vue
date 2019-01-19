@@ -4,7 +4,14 @@
       <option v-for="presetName in presetNames" :key="presetName">{{ presetName }}</option>
     </select>
     <button class="switch" @click="onPlayPause">{{ getPlayPauseLabel() }}</button>
-    <Slider ref="volume" title="Volume" :min="0" :max="100" :defaultValue="100" @change="onMasterVolumeChanged"></Slider>
+    <Slider
+      ref="volume"
+      title="Volume"
+      :min="0"
+      :max="100"
+      :defaultValue="100"
+      @change="onMasterVolumeChanged"
+    ></Slider>
     <Slider ref="bpm" title="BPM" :min="80" :max="200" :defaultValue="80" @change="onBPMChanged"></Slider>
   </div>
 </template>

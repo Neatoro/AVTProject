@@ -1,15 +1,27 @@
 <template>
   <div class="effect-controller">
-    <Slider ref="lowpass" title="Lowpass" :min="0" :max="18000" :defaultValue="18000" @change="onLowpassValueChanged"
+    <Slider
+      ref="lowpass"
+      title="Lowpass"
+      :min="0"
+      :max="18000"
+      :defaultValue="18000"
+      @change="onLowpassValueChanged"
     ></Slider>
-    <Slider ref="highpass" title="Highpass" :min="0" :max="18000" :defaultValue="0" @change="onHighpassValueChanged"
+    <Slider
+      ref="highpass"
+      title="Highpass"
+      :min="0"
+      :max="18000"
+      :defaultValue="0"
+      @change="onHighpassValueChanged"
     ></Slider>
-      <input type="radio" id="lowpass" name="filter-radios" @click="onLowRadio">
-      <label for="lowpass">low</label>
-      <input type="radio" id="highpass" name="filter-radios" @click="onHighRadio">
-      <label for="highpass">high</label>
-      <input type="radio" id="off" name="filter-radios" checked @click="onFilterOffRadio">
-      <label for="off">off</label>
+    <input type="radio" id="lowpass" name="filter-radios" @click="onLowRadio">
+    <label for="lowpass">low</label>
+    <input type="radio" id="highpass" name="filter-radios" @click="onHighRadio">
+    <label for="highpass">high</label>
+    <input type="radio" id="off" name="filter-radios" checked @click="onFilterOffRadio">
+    <label for="off">off</label>
   </div>
 </template>
 
@@ -126,41 +138,6 @@ export default {
         highpass,
         this.$audio.audioContext.currentTime
       );
-    },
-    onMidiMasterHighpass(highpass) {
-      switch (highpass.detail[1]) {
-        case 127:
-          this.$store.commit(mutationTypes.MIDI_MASTER_HIGHPASS_PRESSED, true);
-          break;
-        case 0:
-          this.$store.commit(mutationTypes.MIDI_MASTER_HIGHPASS_PRESSED, false);
-          break;
-      }
-    },
-    onMidiMasterHighpassChanged(highpass) {
-      if (this.masterHighpassIsPressed) {
-        switch (highpass.detail[1]) {
-          case 1:
-            if (this.$refs.highpass.value < 18000) {
-              if (this.$refs.highpass.value > 17900) {
-                this.$refs.highpass.value = 18000;
-              } else {
-                this.$refs.highpass.value = this.$refs.highpass.value + 100;
-              }
-            }
-            break;
-          case 127:
-            if (this.$refs.highpass.value > 0) {
-              if (this.$refs.highpass.value < 100) {
-                this.$refs.highpass.value = 0;
-              } else {
-                this.$refs.highpass.value = this.$refs.highpass.value - 100;
-              }
-            }
-
-            break;
-        }
-      }
     }
   }
 };
