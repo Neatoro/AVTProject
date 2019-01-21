@@ -21,7 +21,6 @@ export default {
       this.addCube(this.trackCount - 1);
     }
   },
-
   methods: {
     init() {
       window.addEventListener("resize", this.handleResize.bind(this));
@@ -37,37 +36,62 @@ export default {
       this.render.bind(this)();
     },
     addCube(i) {
-      let geometry = new THREE.BoxGeometry(50, 50, 50);
-      let material = new THREE.MeshPhongMaterial({
-        color: 0xfefefe,
-        opacity: 0.5
-      });
+      const geometry = new THREE.BoxBufferGeometry(50, 50, 50);
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
       this.mesh[i] = new THREE.Mesh(geometry, material);
-      let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
-      let mat = new THREE.LineBasicMaterial({
-        color: 0xffffff,
-        linewidth: 4
-      });
-      let wireframe = new THREE.LineSegments(geo, mat);
-      this.mesh[i].add(wireframe);
+
       this.mesh[i].position.x = i * 100 - 300;
-      this.$three.scene.add(this.mesh[i]);
       this.mesh[i].position.z = -100;
+
+      this.mesh[i].rand = {
+        r: Math.random() / 2,
+        g: Math.random() / 2,
+        b: Math.random() / 2
+      };
+
+      this.$three.scene.add(this.mesh[i]);
     },
     render() {
-      // _.forEach(this.tracks, function(track) {
-      //   track.analyser()
-      // }.bind(this));
+      const frequencyAvg =
+        _.reduce(
+          this.$audio.dataArray,
+          (avg, current, index) => {
+            return avg + (current - avg) / (index + 1);
+          },
+          0
+        ) / 255;
 
-      this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
-      /*this.wireframe.color = new THREE.Color(
-          this.$audio.dataArray[0] / 255,
-          this.$audio.dataArray[20] / 255,
-          this.$audio.dataArray[80] / 255
-        );*/
-      _.forEach(this.mesh, function(mesh) {
-        mesh.rotation.x += 0.01;
-        mesh.rotation.z += 0.01;
+      _.forEach(
+        this.tracks,
+        _.bind(function(track, index) {
+          if (_.isFunction(track.analyser)) {
+            track.analyser().getByteFrequencyData(this.$audio.dataArray);
+
+            const frequencyAvg =
+              _.reduce(
+                this.$audio.dataArray,
+                (avg, current, index) => {
+                  return avg + (current - avg) / (index + 1);
+                },
+                0
+              ) / 255;
+
+            const mesh = this.mesh[index];
+
+            const factor = frequencyAvg > 0 ? 2 : 1;
+
+            mesh.material.color.setRGB(
+              factor * mesh.rand.r,
+              factor * mesh.rand.g,
+              factor * mesh.rand.b
+            );
+          }
+        }, this)
+      );
+
+      _.forEach(this.mesh, mesh => {
+        mesh.rotation.x += 0.01 * Math.random();
+        mesh.rotation.z += 0.01 * Math.random();
       });
 
       this.$three.renderer.render(this.$three.scene, this.$three.camera);

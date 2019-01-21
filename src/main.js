@@ -52,7 +52,7 @@ if (navigator.requestMIDIAccess) {
       };
 
       for (let input of midiAccess.inputs.values()) {
-        input.onmidimessage = function (evt) {
+        input.onmidimessage = function(evt) {
           const note = evt.data[1];
           const value = evt.data[2];
           const mapping = _(mappings)

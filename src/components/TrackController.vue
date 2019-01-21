@@ -118,7 +118,16 @@ export default {
     MidiBand
   ],
   watch: {
-    selectedTrack() {
+    selectedTrack: "_updateKnobs",
+    trackInformation: {
+      handler() {
+        this._updateKnobs();
+      },
+      deep: true
+    }
+  },
+  methods: {
+    _updateKnobs() {
       this.$refs.volume.value = this.trackInformation.volume;
       this.$refs.lowpass.value = this.trackInformation.lowpass;
       this.$refs.highpass.value = this.trackInformation.highpass;
@@ -127,9 +136,7 @@ export default {
       this.$refs.mBand.value = this.trackInformation.mBand;
       this.$refs.hBand.value = this.trackInformation.hBand;
       this.$refs.delay.value = this.trackInformation.delay;
-    }
-  },
-  methods: {
+    },
     getPlayPauseLabel() {
       return this.isPlaying ? "Pause" : "Play";
     },
