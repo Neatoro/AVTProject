@@ -36,20 +36,29 @@ export default {
       this.render.bind(this)();
     },
     addCube(i) {
-      const geometry = new THREE.BoxBufferGeometry(50, 50, 50);
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const geometry = new THREE.BoxGeometry(50, 50, 50);
+      const material = new THREE.MeshPhongMaterial({
+        color: 0xfefefe,
+        opacity: 0.5
+      });
       this.mesh[i] = new THREE.Mesh(geometry, material);
-
-      this.mesh[i].position.x = i * 100 - 300;
+      let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
+      let mat = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        linewidth: 4
+      });
+      let wireframe = new THREE.LineSegments(geo, mat);
+      this.mesh[i].add(wireframe);
+      this.mesh[i].position.x = i * 100 - 350;
       this.mesh[i].position.z = -100;
-
-      this.mesh[i].rand = {
-        r: Math.random() / 2,
-        g: Math.random() / 2,
-        b: Math.random() / 2
-      };
-
       this.$three.scene.add(this.mesh[i]);
+
+      // this.mesh[i].rand = {
+      //   r: Math.random() / 2,
+      //   g: Math.random() / 2,
+      //   b: Math.random() / 2
+      // };
+        
     },
     render() {
       const frequencyAvg =
@@ -80,11 +89,11 @@ export default {
 
             const factor = frequencyAvg > 0 ? 2 : 1;
 
-            mesh.material.color.setRGB(
-              factor * mesh.rand.r,
-              factor * mesh.rand.g,
-              factor * mesh.rand.b
-            );
+            // mesh.material.color.setRGB(
+            //   factor * mesh.rand.r,
+            //   factor * mesh.rand.g,
+            //   factor * mesh.rand.b
+            // );
           }
         }, this)
       );
