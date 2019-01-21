@@ -78,7 +78,7 @@ if (navigator.requestMIDIAccess) {
 }
 
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
+let camera = new THREE.OrthographicCamera(-900, 900, 100, -100, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = {

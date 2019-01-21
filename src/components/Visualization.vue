@@ -98,17 +98,17 @@ export default {
       window.requestAnimationFrame(this.render);
     },
     handleResize() {
-      console.log(this.$refs.threeCanvas.clientWidth);
+      this.$three.camera.left = -this.$refs.threeCanvas.clientWidth / 2;
+      this.$three.camera.top = this.$refs.threeCanvas.clientHeight / 2;
+      this.$three.camera.bottom = -this.$refs.threeCanvas.clientHeight / 2;
+      this.$three.camera.right = this.$refs.threeCanvas.clientWidth / 2;
 
-      this.$three.camera.aspect =
-        this.$refs.threeCanvas.clientWidth /
-        this.$refs.threeCanvas.clientHeight;
-      this.$three.camera.updateProjectionMatrix();
       this.$three.renderer.setSize(
         this.$refs.threeCanvas.clientWidth,
         this.$refs.threeCanvas.clientHeight,
         false
       );
+      this.$three.camera.updateProjectionMatrix();
     }
   },
   mounted() {
