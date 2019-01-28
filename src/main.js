@@ -23,7 +23,8 @@ connector.connect(lowpass).connect(gain);
 gain.connect(audioContext.destination);
 const analyser = audioContext.createAnalyser();
 gain.connect(analyser);
-const bufferLength = analyser.fftSize;
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
 Vue.prototype.$audio = {
