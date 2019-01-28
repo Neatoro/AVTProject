@@ -13,7 +13,8 @@ export default {
     mesh: [],
     frequencyAvg: [],
     SCALEFACTOR: 1,
-    SPACEBETWEENCUBES: 200
+    SPACEBETWEENCUBES: 200,
+      NUMBEROFSEGMENTS: 4
   }),
   computed: mapState({
     trackCount: state => state.trackCount,
@@ -39,15 +40,16 @@ export default {
       this.render.bind(this)();
     },
     addCube(i) {
-      const geometry = new THREE.BoxGeometry(50, 50, 50);
-      const material = new THREE.MeshPhongMaterial({
-        color: 0xfefefe,
-        opacity: 0.5
+      const geometry = new THREE.BoxGeometry(50, 50, 50, this.NUMBEROFSEGMENTS, this.NUMBEROFSEGMENTS, this.NUMBEROFSEGMENTS);
+      const material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        opacity: 1,
+          wireframe: true,
       });
       this.mesh[i] = new THREE.Mesh(geometry, material);
-      let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
-      let mat = new THREE.LineBasicMaterial({
-        color: 0xffffff,
+         let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
+        let mat = new THREE.LineBasicMaterial({
+        color: 0x000000,
         linewidth: 4
       });
       let wireframe = new THREE.LineSegments(geo, mat);
@@ -74,20 +76,20 @@ export default {
     },
     render() {
       this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
-      this.frequencyAvg = this.splitAndAvg(this.$audio.dataArray);
+      this.frequencyAvg = this.splitAndAvg(this.$audio.dataArray, this.trackCount);
       _.forEach(
         this.tracks,
         _.bind(function(track, index) {
           if (_.isFunction(track.analyser)) {
-            track.analyser().getByteFrequencyData(this.$audio.dataArray);
-            const frequencyAvgPerTrack =
-              _.reduce(
-                this.$audio.dataArray,
-                (avg, current, index) => {
-                  return avg + (current - avg) / (index + 1);
-                },
-                0
-              ) / 255;
+
+            // const frequencyAvgPerTrack =
+            //   _.reduce(
+            //     this.$audio.dataArray,
+            //     (avg, current, index) => {
+            //       return avg + (current - avg) / (index + 1);
+            //     },
+            //     0
+            //   ) / 255;
 
             const mesh = this.mesh[index];
             if (this.frequencyAvg[index] === 0) {
@@ -95,10 +97,20 @@ export default {
               mesh.scale.y = 1;
               mesh.scale.z = 1;
             } else {
-              mesh.scale.x = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
-              mesh.scale.y = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
-              mesh.scale.z = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
+                mesh.scale.x = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
+                mesh.scale.y = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
+                mesh.scale.z = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
             }
+
+              track.analyser().getByteFrequencyData(this.$audio.dataArray);
+            let frequencyAvgTrack = this.splitAndAvg(this.$audio.dataArray, this.NUMBEROFSEGMENTS * 3);
+                for ( var i = 1; i <2; i++ ) {
+                    mesh.geometry.vertices[i].x += 1;
+                    // mesh.geometry.vertices[i].y += 0.41;
+                    mesh.geometry.vertices[i].z += 1.2;
+                }
+                mesh.geometry.verticesNeedUpdate = true;
+
             // mesh.material.color.setRGB(
             //   factor * mesh.rand.r,
             //   factor * mesh.rand.g,
@@ -106,7 +118,7 @@ export default {
             // );
           }
         }, this)
-      );
+    );
 
       _.forEach(this.mesh, mesh => {
         mesh.rotation.y += 0.01 * Math.random();
@@ -115,10 +127,10 @@ export default {
       this.$three.renderer.render(this.$three.scene, this.$three.camera);
       window.requestAnimationFrame(this.render);
     },
-    splitAndAvg(dataArray) {
+    splitAndAvg(dataArray, count) {
       let avgArray = [];
-      const size = Math.floor(dataArray.length / this.trackCount);
-      for (let i = 0; i < this.trackCount; i++) {
+      const size = Math.floor(dataArray.length / count);
+      for (let i = 0; i < count; i++) {
         let slice = _.slice(dataArray, i * size, (i + 1) * size);
         let avg = this.calcFrequencyAvg(slice);
         avgArray.push(avg);
