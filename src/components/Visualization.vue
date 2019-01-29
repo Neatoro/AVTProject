@@ -1,175 +1,210 @@
 <template>
-  <canvas class="viz" id="threeCanvas" ref="threeCanvas"></canvas>
+    <canvas class="viz" id="threeCanvas" ref="threeCanvas"></canvas>
 </template>
 
 <script>
-import * as THREE from "three";
-import { mapState } from "vuex";
-import _ from "lodash";
+    import * as THREE from "three";
+    import {mapState} from "vuex";
+    import _ from "lodash";
 
-export default {
-  name: "Visualization",
-  data: () => ({
-    mesh: [],
-    frequencyAvg: [],
-    SCALEFACTOR: 1,
-    SPACEBETWEENCUBES: 200,
-      NUMBEROFSEGMENTS: 4
-  }),
-  computed: mapState({
-    trackCount: state => state.trackCount,
-    tracks: state => state.tracks
-  }),
-  watch: {
-    trackCount() {
-      this.addCube(this.trackCount - 1);
-    }
-  },
-  methods: {
-    init() {
-      window.addEventListener("resize", this.handleResize.bind(this));
-      this.$three.renderer = new THREE.WebGLRenderer({
-        canvas: this.$refs.threeCanvas,
-        antialias: true
-      });
-      this.handleResize();
-      for (let i = 0; i < this.trackCount; i++) {
-        this.addCube(i);
-      }
-      this.$three.renderer.render(this.$three.scene, this.$three.camera);
-      this.render.bind(this)();
-    },
-    addCube(i) {
-      const geometry = new THREE.BoxGeometry(50, 50, 50, this.NUMBEROFSEGMENTS, this.NUMBEROFSEGMENTS, this.NUMBEROFSEGMENTS);
-      const material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        opacity: 1,
-          wireframe: true,
-      });
-      this.mesh[i] = new THREE.Mesh(geometry, material);
-         let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
-        let mat = new THREE.LineBasicMaterial({
-        color: 0x000000,
-        linewidth: 4
-      });
-      let wireframe = new THREE.LineSegments(geo, mat);
-      this.mesh[i].add(wireframe);
-      this.mesh[i].position.x = i * this.SPACEBETWEENCUBES - (this.trackCount * (this.SPACEBETWEENCUBES / 2) - (this.SPACEBETWEENCUBES / 2));
-      this.mesh[i].position.z = -100;
-      this.mesh[i].rotation.x += 0.3;
-      this.$three.scene.add(this.mesh[i]);
-
-      //position all existing cubes at correct position
-      _.forEach(
-        this.mesh,
-        _.bind(function(mesh, index) {
-          console.log(index);
-          mesh.position.x = index * this.SPACEBETWEENCUBES - (this.trackCount * (this.SPACEBETWEENCUBES / 2) - (this.SPACEBETWEENCUBES / 2));
-        }, this)
-      );
-
-      // this.mesh[i].rand = {
-      //   r: Math.random() / 2,
-      //   g: Math.random() / 2,
-      //   b: Math.random() / 2
-      // };
-    },
-    render() {
-      this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
-      this.frequencyAvg = this.splitAndAvg(this.$audio.dataArray, this.trackCount);
-      _.forEach(
-        this.tracks,
-        _.bind(function(track, index) {
-          if (_.isFunction(track.analyser)) {
-
-            // const frequencyAvgPerTrack =
-            //   _.reduce(
-            //     this.$audio.dataArray,
-            //     (avg, current, index) => {
-            //       return avg + (current - avg) / (index + 1);
-            //     },
-            //     0
-            //   ) / 255;
-
-            const mesh = this.mesh[index];
-            if (this.frequencyAvg[index] === 0) {
-              mesh.scale.x = 1;
-              mesh.scale.y = 1;
-              mesh.scale.z = 1;
-            } else {
-                mesh.scale.x = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
-                mesh.scale.y = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
-                mesh.scale.z = this.frequencyAvg[index] * this.SCALEFACTOR + 1;
+    export default {
+        name: "Visualization",
+        data: () => ({
+            mesh: [],
+            frequencyAvg: [],
+            SCALEFACTORCUBES: 1,
+            SPACEBETWEENCUBES: 200,
+            //Should not be higher than 80
+            NUMBEROFSEGMENTS: 20,
+            SCALFACTORSIDES: 25,
+            CUBESIZE: 50
+        }),
+        computed: mapState({
+            trackCount: state => state.trackCount,
+            tracks: state => state.tracks
+        }),
+        watch: {
+            trackCount() {
+                this.addCube(this.trackCount - 1);
             }
-
-              track.analyser().getByteFrequencyData(this.$audio.dataArray);
-            let frequencyAvgTrack = this.splitAndAvg(this.$audio.dataArray, this.NUMBEROFSEGMENTS * 3);
-                for ( var i = 1; i <2; i++ ) {
-                    mesh.geometry.vertices[i].x += 1;
-                    // mesh.geometry.vertices[i].y += 0.41;
-                    mesh.geometry.vertices[i].z += 1.2;
+        },
+        methods: {
+            init() {
+                window.addEventListener("resize", this.handleResize.bind(this));
+                this.$three.renderer = new THREE.WebGLRenderer({
+                    canvas: this.$refs.threeCanvas,
+                    antialias: true
+                });
+                this.handleResize();
+                for (let i = 0; i < this.trackCount; i++) {
+                    this.addCube(i);
                 }
-                mesh.geometry.verticesNeedUpdate = true;
+                this.$three.renderer.render(this.$three.scene, this.$three.camera);
+                this.render.bind(this)();
+            },
+            addCube(i) {
+                const geometry = new THREE.BoxGeometry(
+                    this.CUBESIZE,
+                    this.CUBESIZE,
+                    this.CUBESIZE,
+                    this.NUMBEROFSEGMENTS,
+                    this.NUMBEROFSEGMENTS,
+                    this.NUMBEROFSEGMENTS
+                );
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    opacity: 1,
+                    wireframe: true
+                });
+                this.mesh[i] = new THREE.Mesh(geometry, material);
+                let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
+                let mat = new THREE.LineBasicMaterial({
+                    color: 0x000000,
+                    linewidth: 4
+                });
+                let wireframe = new THREE.LineSegments(geo, mat);
+                this.mesh[i].add(wireframe);
+                this.mesh[i].position.x =
+                    i * this.SPACEBETWEENCUBES -
+                    (this.trackCount * (this.SPACEBETWEENCUBES / 2) -
+                        this.SPACEBETWEENCUBES / 2);
+                this.mesh[i].position.z = -100;
+                this.mesh[i].rotation.x += 0.3;
+                this.$three.scene.add(this.mesh[i]);
 
-            // mesh.material.color.setRGB(
-            //   factor * mesh.rand.r,
-            //   factor * mesh.rand.g,
-            //   factor * mesh.rand.b
-            // );
-          }
-        }, this)
-    );
+                //position all existing cubes at correct position
+                _.forEach(
+                    this.mesh,
+                    _.bind(function (mesh, index) {
+                        console.log(index);
+                        mesh.position.x =
+                            index * this.SPACEBETWEENCUBES -
+                            (this.trackCount * (this.SPACEBETWEENCUBES / 2) -
+                                this.SPACEBETWEENCUBES / 2);
+                    }, this)
+                );
 
-      _.forEach(this.mesh, mesh => {
-        mesh.rotation.y += 0.01 * Math.random();
-      });
+                // this.mesh[i].rand = {
+                //   r: Math.random() / 2,
+                //   g: Math.random() / 2,
+                //   b: Math.random() / 2
+                // };
+            },
+            render() {
+                this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
+                this.frequencyAvg = this.splitAndAvg(
+                    this.$audio.dataArray,
+                    this.trackCount
+                );
+                _.forEach(
+                    this.tracks,
+                    _.bind(function (track, index) {
+                        if (_.isFunction(track.analyser)) {
+                            // const frequencyAvgPerTrack =
+                            //   _.reduce(
+                            //     this.$audio.dataArray,
+                            //     (avg, current, index) => {
+                            //       return avg + (current - avg) / (index + 1);
+                            //     },
+                            //     0
+                            //   ) / 255;
 
-      this.$three.renderer.render(this.$three.scene, this.$three.camera);
-      window.requestAnimationFrame(this.render);
-    },
-    splitAndAvg(dataArray, count) {
-      let avgArray = [];
-      const size = Math.floor(dataArray.length / count);
-      for (let i = 0; i < count; i++) {
-        let slice = _.slice(dataArray, i * size, (i + 1) * size);
-        let avg = this.calcFrequencyAvg(slice);
-        avgArray.push(avg);
-      }
-      return avgArray;
-    },
-    calcFrequencyAvg(array) {
-      return (
-        _.reduce(
-          array,
-          (avg, current, index) => {
-            return avg + (current - avg) / (index + 1);
-          },
-          0
-        ) / 255
-      );
-    },
-    handleResize() {
-      this.$three.camera.left = -this.$refs.threeCanvas.clientWidth / 2;
-      this.$three.camera.top = this.$refs.threeCanvas.clientHeight / 2;
-      this.$three.camera.bottom = -this.$refs.threeCanvas.clientHeight / 2;
-      this.$three.camera.right = this.$refs.threeCanvas.clientWidth / 2;
+                            const mesh = this.mesh[index];
+                            if (this.frequencyAvg[index] === 0) {
+                                mesh.scale.x = 1;
+                                mesh.scale.y = 1;
+                                mesh.scale.z = 1;
+                            } else {
+                                mesh.scale.x = this.frequencyAvg[index] * this.SCALEFACTORCUBES + 1;
+                                mesh.scale.y = this.frequencyAvg[index] * this.SCALEFACTORCUBES + 1;
+                                mesh.scale.z = this.frequencyAvg[index] * this.SCALEFACTORCUBES + 1;
+                            }
 
-      this.$three.renderer.setSize(
-        this.$refs.threeCanvas.clientWidth,
-        this.$refs.threeCanvas.clientHeight,
-        false
-      );
-      this.$three.camera.updateProjectionMatrix();
-    }
-  },
-  mounted() {
-    this.init();
-  }
-};
+                            track.analyser().getByteFrequencyData(this.$audio.dataArray);
+                            let frequencyAvgTrack = this.splitAndAvg(
+                                this.$audio.dataArray,
+                                (this.NUMBEROFSEGMENTS - 1) * 3
+                            );
+                            // for ( var i = 1; i <2; i++ ) {
+                            //mesh.geometry.vertices[i].x += 1;
+                            // mesh.geometry.vertices[i].y += 0.41;
+                            // mesh.geometry.vertices[5].x -= 10;
+                            // }
+
+                            //LBand - left side
+                            for(let i = (this.NUMBEROFSEGMENTS + 1) * (this.NUMBEROFSEGMENTS + 2); i < (this.NUMBEROFSEGMENTS + 1) * (2 * this.NUMBEROFSEGMENTS + 1); i++) {
+                                let index = Math.floor(i / (this.NUMBEROFSEGMENTS + 1)) - this.NUMBEROFSEGMENTS + 1;
+                                mesh.geometry.vertices[i].x = - (this.CUBESIZE / 2) - (frequencyAvgTrack[index] * this.SCALFACTORSIDES);
+                            }
+
+                            //HBand - right side
+                            for (let i = this.NUMBEROFSEGMENTS + 1; i < (this.NUMBEROFSEGMENTS + 1) * this.NUMBEROFSEGMENTS; i++) {
+                                let row = Math.floor(i / (this.NUMBEROFSEGMENTS + 1));
+                                let index = frequencyAvgTrack.length - row;
+                                mesh.geometry.vertices[i].x = (this.CUBESIZE / 2) + frequencyAvgTrack[index] * this.SCALFACTORSIDES;
+                            }
+
+                            mesh.geometry.verticesNeedUpdate = true;
+
+                            // mesh.material.color.setRGB(
+                            //   factor * mesh.rand.r,
+                            //   factor * mesh.rand.g,
+                            //   factor * mesh.rand.b
+                            // );
+                        }
+                    }, this)
+                );
+
+                // _.forEach(this.mesh, mesh => {
+                //   mesh.rotation.y += 0.01 * Math.random();
+                // });
+
+                this.$three.renderer.render(this.$three.scene, this.$three.camera);
+                window.requestAnimationFrame(this.render);
+            },
+            splitAndAvg(dataArray, count) {
+                let avgArray = [];
+                const size = Math.floor(dataArray.length / count);
+                for (let i = 0; i < count; i++) {
+                    let slice = _.slice(dataArray, i * size, (i + 1) * size);
+                    let avg = this.calcFrequencyAvg(slice);
+                    avgArray.push(avg);
+                }
+                return avgArray;
+            },
+            calcFrequencyAvg(array) {
+                return (
+                    _.reduce(
+                        array,
+                        (avg, current, index) => {
+                            return avg + (current - avg) / (index + 1);
+                        },
+                        0
+                    ) / 255
+                );
+            },
+            handleResize() {
+                this.$three.camera.left = -this.$refs.threeCanvas.clientWidth / 2;
+                this.$three.camera.top = this.$refs.threeCanvas.clientHeight / 2;
+                this.$three.camera.bottom = -this.$refs.threeCanvas.clientHeight / 2;
+                this.$three.camera.right = this.$refs.threeCanvas.clientWidth / 2;
+
+                this.$three.renderer.setSize(
+                    this.$refs.threeCanvas.clientWidth,
+                    this.$refs.threeCanvas.clientHeight,
+                    false
+                );
+                this.$three.camera.updateProjectionMatrix();
+            }
+        },
+        mounted() {
+            this.init();
+        }
+    };
 </script>
 
 <style lang="scss">
-#threeCanvas {
-  background-color: black;
-}
+    #threeCanvas {
+        background-color: black;
+    }
 </style>
