@@ -12,12 +12,12 @@ export default {
   data: () => ({
     mesh: [],
     frequencyAvg: [],
-    SCALEFACTORCUBES: 1,
+    SCALEFACTORCUBES: 0.5,
     SPACEBETWEENCUBES: 200,
     //Should not be higher than 80
-    NUMBEROFSEGMENTS: 20,
-    SCALFACTORSIDES: 25,
-    CUBESIZE: 50
+    NUMBEROFSEGMENTS: 8,
+    SCALFACTORSIDES: 40,
+    CUBESIZE: 100
   }),
   computed: mapState({
     trackCount: state => state.trackCount,
@@ -51,19 +51,9 @@ export default {
         this.NUMBEROFSEGMENTS,
         this.NUMBEROFSEGMENTS
       );
-      const material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        opacity: 1,
-        wireframe: true
-      });
+
+      const material = new THREE.MeshNormalMaterial({ wireframe: true });
       this.mesh[i] = new THREE.Mesh(geometry, material);
-      let geo = new THREE.EdgesGeometry(this.mesh[i].geometry);
-      let mat = new THREE.LineBasicMaterial({
-        color: 0x000000,
-        linewidth: 4
-      });
-      let wireframe = new THREE.LineSegments(geo, mat);
-      this.mesh[i].add(wireframe);
       this.mesh[i].position.x =
         i * this.SPACEBETWEENCUBES -
         (this.trackCount * (this.SPACEBETWEENCUBES / 2) -
@@ -84,11 +74,6 @@ export default {
         }, this)
       );
 
-      // this.mesh[i].rand = {
-      //   r: Math.random() / 2,
-      //   g: Math.random() / 2,
-      //   b: Math.random() / 2
-      // };
     },
     render() {
       this.$audio.analyser.getByteFrequencyData(this.$audio.dataArray);
@@ -100,15 +85,6 @@ export default {
         this.tracks,
         _.bind(function(track, index) {
           if (_.isFunction(track.analyser)) {
-            // const frequencyAvgPerTrack =
-            //   _.reduce(
-            //     this.$audio.dataArray,
-            //     (avg, current, index) => {
-            //       return avg + (current - avg) / (index + 1);
-            //     },
-            //     0
-            //   ) / 255;
-
             const mesh = this.mesh[index];
             if (this.frequencyAvg[index] === 0) {
               mesh.scale.x = 1;
@@ -128,11 +104,6 @@ export default {
               this.$audio.dataArray,
               (this.NUMBEROFSEGMENTS - 1) * 3
             );
-            // for ( var i = 1; i <2; i++ ) {
-            //mesh.geometry.vertices[i].x += 1;
-            // mesh.geometry.vertices[i].y += 0.41;
-            // mesh.geometry.vertices[5].x -= 10;
-            // }
 
             //LBand - left side
             for (
@@ -190,12 +161,7 @@ export default {
             }
 
             mesh.geometry.verticesNeedUpdate = true;
-
-            // mesh.material.color.setRGB(
-            //   factor * mesh.rand.r,
-            //   factor * mesh.rand.g,
-            //   factor * mesh.rand.b
-            // );
+              
           }
         }, this)
       );
