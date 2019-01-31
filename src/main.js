@@ -23,7 +23,8 @@ connector.connect(lowpass).connect(gain);
 gain.connect(audioContext.destination);
 const analyser = audioContext.createAnalyser();
 gain.connect(analyser);
-const bufferLength = analyser.fftSize;
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
 Vue.prototype.$audio = {
@@ -52,7 +53,7 @@ if (navigator.requestMIDIAccess) {
       };
 
       for (let input of midiAccess.inputs.values()) {
-        input.onmidimessage = function (evt) {
+        input.onmidimessage = function(evt) {
           const note = evt.data[1];
           const value = evt.data[2];
           const mapping = _(mappings)
@@ -78,7 +79,7 @@ if (navigator.requestMIDIAccess) {
 }
 
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(100, 1, 1, 1000);
+let camera = new THREE.OrthographicCamera(-900, 900, 100, -100, 1, 1000);
 let renderer;
 
 Vue.prototype.$three = {
