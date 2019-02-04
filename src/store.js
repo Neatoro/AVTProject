@@ -65,7 +65,7 @@ export default new Vuex.Store({
     samples: [],
     bpm: 80,
     isPlaying: false,
-    currentColumn: 0,
+    currentColumn: -1,
     selectedPreset: "None",
     presets,
     selectedTrack: 1,

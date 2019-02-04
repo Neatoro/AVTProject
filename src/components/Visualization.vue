@@ -15,7 +15,7 @@ export default {
     SCALEFACTORCUBES: 0.5,
     SPACEBETWEENCUBES: 200,
     //Should not be higher than 80
-    NUMBEROFSEGMENTS: 8,
+    NUMBEROFSEGMENTS: 16,
     SCALFACTORSIDES: 40,
     CUBESIZE: 100
   }),

@@ -78,7 +78,7 @@ function stop() {
 }
 
 function calcualteTiming(bpm) {
-  return 60000 / (16 * bpm);
+  return 60000 / (16 * bpm * 4) ;
 }
 
 export default {
